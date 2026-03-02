@@ -1,0 +1,16 @@
+<!-- LogicLens Wordmark Only V2 -->
+<svg width="600" height="120" viewBox="0 0 600 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  
+  <!-- Wordmark: LogicLens -->
+  <text 
+    x="0" 
+    y="80" 
+    font-family="'Inter', 'SF Pro Display', -apple-system, system-ui, sans-serif" 
+    font-size="68" 
+    font-weight="700" 
+    fill="#1A202C" 
+    letter-spacing="-1.5"
+  >
+    LogicLens
+  </text>
+</svg>

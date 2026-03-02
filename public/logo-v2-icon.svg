@@ -1,0 +1,37 @@
+<!-- LogicLens Icon — Code Lens -->
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background: Rounded square with gradient -->
+  <defs>
+    <linearGradient id="logoBg" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <linearGradient id="lensBg" x1="40" y1="30" x2="90" y2="90" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.25)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0.05)"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Rounded square background -->
+  <rect width="120" height="120" rx="28" fill="url(#logoBg)"/>
+  
+  <!-- Subtle inner glow -->
+  <rect x="2" y="2" width="116" height="116" rx="26" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+  
+  <!-- Lens circle (subtle) -->
+  <circle cx="64" cy="58" r="30" fill="url(#lensBg)" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+  
+  <!-- Left curly brace { -->
+  <path d="M 42 38 C 42 38, 36 38, 36 44 L 36 52 C 36 52, 36 58, 30 58 C 36 58, 36 64, 36 64 L 36 72 C 36 78, 42 78, 42 78" 
+    stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  
+  <!-- Right curly brace } -->
+  <path d="M 78 38 C 78 38, 84 38, 84 44 L 84 52 C 84 52, 84 58, 90 58 C 84 58, 84 64, 84 64 L 84 72 C 84 78, 78 78, 78 78" 
+    stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  
+  <!-- Center dot / focus indicator -->
+  <circle cx="60" cy="58" r="3" fill="white" opacity="0.9"/>
+  
+  <!-- Lens handle (small diagonal line at bottom-right of the circle) -->
+  <line x1="86" y1="80" x2="96" y2="92" stroke="rgba(255,255,255,0.5)" stroke-width="3" stroke-linecap="round"/>
+</svg>

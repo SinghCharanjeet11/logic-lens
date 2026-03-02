@@ -1,0 +1,30 @@
+<!-- LogicLens Logo V2 - Dark Background -->
+<svg width="900" height="180" viewBox="0 0 900 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  
+  <!-- Abstract L Icon: Layered geometric shapes -->
+  <g id="icon" transform="translate(20, 30)">
+    <!-- Outer L shape -->
+    <path d="M 0 0 L 0 120 L 80 120 L 80 100 L 20 100 L 20 0 Z" fill="#E2E8F0" opacity="0.15"/>
+    
+    <!-- Middle L shape -->
+    <path d="M 10 10 L 10 110 L 70 110 L 70 95 L 25 95 L 25 10 Z" fill="#6B7FFF" opacity="0.5"/>
+    
+    <!-- Inner L shape -->
+    <path d="M 20 20 L 20 100 L 60 100 L 60 90 L 30 90 L 30 20 Z" fill="#A5B4FC"/>
+  </g>
+  
+  <!-- Wordmark: LogicLens -->
+  <g id="wordmark" transform="translate(140, 0)">
+    <text 
+      x="0" 
+      y="105" 
+      font-family="'Inter', 'SF Pro Display', -apple-system, system-ui, sans-serif" 
+      font-size="68" 
+      font-weight="700" 
+      fill="#F8FAFC" 
+      letter-spacing="-1.5"
+    >
+      LogicLens
+    </text>
+  </g>
+</svg>

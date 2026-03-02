@@ -1,0 +1,25 @@
+<!-- LogicLens Full Logo with Wordmark -->
+<svg width="280" height="40" viewBox="0 0 280 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="logoBgFull" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#8B5CF6"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Icon (scaled down) -->
+  <g transform="scale(0.333)">
+    <rect width="120" height="120" rx="28" fill="url(#logoBgFull)"/>
+    <circle cx="64" cy="58" r="30" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+    <path d="M 42 38 C 42 38, 36 38, 36 44 L 36 52 C 36 52, 36 58, 30 58 C 36 58, 36 64, 36 64 L 36 72 C 36 78, 42 78, 42 78" 
+      stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M 78 38 C 78 38, 84 38, 84 44 L 84 52 C 84 52, 84 58, 90 58 C 84 58, 84 64, 84 64 L 84 72 C 84 78, 78 78, 78 78" 
+      stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <circle cx="60" cy="58" r="3" fill="white" opacity="0.9"/>
+  </g>
+  
+  <!-- Wordmark -->
+  <text x="52" y="28" font-family="'Inter', system-ui, sans-serif" font-size="22" font-weight="800" fill="#0F172A" letter-spacing="-0.5">
+    Logic<tspan fill="#6366F1">Lens</tspan>
+  </text>
+</svg>

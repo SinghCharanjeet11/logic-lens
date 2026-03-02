@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'DynamoDB table for LogicLens session management'
+
+Resources:
+  LogicLensSessionsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: LogicLens-Sessions
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: sessionId
+          AttributeType: S
+        - AttributeName: createdAt
+          AttributeType: S
+      KeySchema:
+        - AttributeName: sessionId
+          KeyType: HASH
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+      GlobalSecondaryIndexes:
+        - IndexName: CreatedAtIndex
+          KeySchema:
+            - AttributeName: createdAt
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+      Tags:
+        - Key: Project
+          Value: LogicLens
+        - Key: Environment
+          Value: Production
+
+Outputs:
+  TableName:
+    Description: Name of the DynamoDB table
+    Value: !Ref LogicLensSessionsTable
+    Export:
+      Name: LogicLens-SessionsTableName
+  
+  TableArn:
+    Description: ARN of the DynamoDB table
+    Value: !GetAtt LogicLensSessionsTable.Arn
+    Export:
+      Name: LogicLens-SessionsTableArn
