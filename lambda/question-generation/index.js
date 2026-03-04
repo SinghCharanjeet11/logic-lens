@@ -1,15 +1,19 @@
 const { BedrockRuntimeClient, InvokeModelCommand } = require('@aws-sdk/client-bedrock-runtime');
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, PutCommand, GetCommand } = require('@aws-sdk/lib-dynamodb');
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const crypto = require('crypto');
 
-const bedrockClient = new BedrockRuntimeClient({ region: process.env.AWS_REGION || 'us-east-1' });
-const dynamoClient = DynamoDBDocumentClient.from(new DynamoDBClient({ region: process.env.AWS_REGION || 'us-east-1' }));
+const region = process.env.AWS_REGION || 'us-east-1';
+const bedrockClient = new BedrockRuntimeClient({ region });
+const dynamoClient = DynamoDBDocumentClient.from(new DynamoDBClient({ region }));
+const s3Client = new S3Client({ region });
 
 // Amazon Nova 2 Lite model ID
 const MODEL_ID = process.env.BEDROCK_MODEL_ID || 'us.amazon.nova-2-lite-v1:0';
 const TABLE_NAME = process.env.DYNAMODB_TABLE || 'LogicLensSessionsTable';
 const CACHE_TABLE = 'LogicLens-Cache';
+const BUCKET_NAME = process.env.S3_BUCKET_NAME;
 
 exports.handler = async (event) => {
   console.log('Question Generation Lambda triggered', { event: JSON.stringify(event) });
@@ -39,6 +43,7 @@ exports.handler = async (event) => {
     }
 
     const { code, context, language = 'en', sessionId, difficulty = 'intermediate' } = body;
+    const finalSessionId = sessionId || generateSessionId();
 
     // Validate input
     if (!code || code.trim().length < 10) {
@@ -100,17 +105,42 @@ exports.handler = async (event) => {
       }
     }
 
+    // --- S3 Storage Logic ---
+    if (BUCKET_NAME) {
+      try {
+        // Store code
+        await s3Client.send(new PutObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: `sessions/${finalSessionId}/code.txt`,
+          Body: code,
+          ContentType: 'text/plain'
+        }));
+
+        // Store questions
+        await s3Client.send(new PutObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: `sessions/${finalSessionId}/questions.json`,
+          Body: JSON.stringify(questions),
+          ContentType: 'application/json'
+        }));
+        console.log('Data stored in S3');
+      } catch (s3Error) {
+        console.warn('Failed to store data in S3 (non-fatal)', s3Error);
+      }
+    }
+
     // Store session in DynamoDB (LogicLensSessionsTable)
     const session = {
-      sessionId: sessionId || generateSessionId(),
-      code,
+      sessionId: finalSessionId,
+      // code, // Removed code from DynamoDB
       context,
       language,
-      questions,
+      // questions, // Removed questions from DynamoDB
       createdAt: Date.now(),
       ttl: Math.floor(Date.now() / 1000) + (24 * 60 * 60), // 24 hours
       status: 'questions_generated',
-      cacheHit
+      cacheHit,
+      hasS3: !!BUCKET_NAME
     };
 
     await dynamoClient.send(new PutCommand({

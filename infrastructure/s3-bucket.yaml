@@ -1,0 +1,25 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'S3 bucket for LogicLens session data storage'
+
+Resources:
+  LogicLensS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub 'logic-lens-sessions-${AWS::AccountId}'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: AutoDeleteSessions
+            Status: Enabled
+            ExpirationInDays: 1
+            Prefix: 'sessions/'
+
+Outputs:
+  BucketName:
+    Value: !Ref LogicLensS3Bucket
+    Export:
+      Name: LogicLens-S3BucketName

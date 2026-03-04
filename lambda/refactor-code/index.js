@@ -1,13 +1,17 @@
 const { BedrockRuntimeClient, InvokeModelCommand } = require('@aws-sdk/client-bedrock-runtime');
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, GetCommand, UpdateCommand } = require('@aws-sdk/lib-dynamodb');
+const { S3Client, GetObjectCommand, PutObjectCommand } = require('@aws-sdk/client-s3');
 
-const bedrockClient = new BedrockRuntimeClient({ region: process.env.AWS_REGION || 'us-east-1' });
-const dynamoClient = DynamoDBDocumentClient.from(new DynamoDBClient({ region: process.env.AWS_REGION || 'us-east-1' }));
+const region = process.env.AWS_REGION || 'us-east-1';
+const bedrockClient = new BedrockRuntimeClient({ region });
+const dynamoClient = DynamoDBDocumentClient.from(new DynamoDBClient({ region }));
+const s3Client = new S3Client({ region });
 
 // Use inference profile for Nova models (required for on-demand throughput)
-const MODEL_ID = 'us.amazon.nova-2-lite-v1:0'; // Amazon Nova 2 Lite inference profile
+const MODEL_ID = process.env.BEDROCK_MODEL_ID || 'us.amazon.nova-2-lite-v1:0';
 const TABLE_NAME = process.env.DYNAMODB_TABLE || 'LogicLensSessionsTable';
+const BUCKET_NAME = process.env.S3_BUCKET_NAME;
 
 exports.handler = async (event) => {
   console.log('Refactor Code Lambda triggered', { event });
@@ -29,10 +33,8 @@ exports.handler = async (event) => {
     // Parse body - handle both API Gateway formats
     let body;
     if (event.body) {
-      // API Gateway REST API format
       body = typeof event.body === 'string' ? JSON.parse(event.body) : event.body;
     } else {
-      // Direct invocation or API Gateway HTTP API format
       body = event;
     }
 
@@ -53,33 +55,87 @@ exports.handler = async (event) => {
     }
 
     const session = sessionResult.Item;
+    let code = session.code;
+    let analysis = session.analysis;
 
-    if (!session.analysis) {
+    // --- S3 Retrieval Logic ---
+    if (session.hasAnalysisInS3 && BUCKET_NAME) {
+      try {
+        console.log('Fetching data from S3...');
+        // Fetch code
+        const codeRes = await s3Client.send(new GetObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: `sessions/${sessionId}/code.txt`
+        }));
+        code = await codeRes.Body.transformToString();
+
+        // Fetch analysis
+        const analysisRes = await s3Client.send(new GetObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: `sessions/${sessionId}/analysis.json`
+        }));
+        analysis = JSON.parse(await analysisRes.Body.transformToString());
+      } catch (s3ReadError) {
+        console.error('Failed to read from S3:', s3ReadError.message);
+        if (!code || !analysis) {
+          return errorResponse(500, 'Failed to retrieve session data from S3');
+        }
+      }
+    }
+
+    if (!analysis) {
       return errorResponse(400, 'Analysis must be completed first');
     }
 
     // Generate refactored code and checklist
     const refactorResult = await generateRefactoredCode(
-      session.code,
-      session.analysis,
+      code,
+      analysis,
       session.language || 'en'
     );
 
-    // Update session
-    await dynamoClient.send(new UpdateCommand({
-      TableName: TABLE_NAME,
-      Key: { sessionId },
-      UpdateExpression: 'SET refactoredCode = :refactored, checklist = :checklist, #status = :status, completedAt = :completedAt',
-      ExpressionAttributeNames: {
-        '#status': 'status'
-      },
-      ExpressionAttributeValues: {
-        ':refactored': refactorResult.refactoredCode,
-        ':checklist': refactorResult.checklist,
-        ':status': 'completed',
-        ':completedAt': Date.now()
+    // --- S3 Storage Logic ---
+    if (BUCKET_NAME) {
+      try {
+        // Store refactored code
+        await s3Client.send(new PutObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: `sessions/${sessionId}/refactored.txt`,
+          Body: refactorResult.refactoredCode,
+          ContentType: 'text/plain'
+        }));
+
+        // Store checklist
+        await s3Client.send(new PutObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: `sessions/${sessionId}/checklist.json`,
+          Body: JSON.stringify(refactorResult.checklist),
+          ContentType: 'application/json'
+        }));
+        console.log('Refactoring results stored in S3');
+      } catch (s3WriteError) {
+        console.warn('Failed to store refactoring in S3 (non-fatal):', s3WriteError.message);
       }
-    }));
+    }
+
+    // Update session
+    try {
+      await dynamoClient.send(new UpdateCommand({
+        TableName: TABLE_NAME,
+        Key: { sessionId },
+        UpdateExpression: 'SET #status = :status, completedAt = :completedAt, hasRefactorInS3 = :hasS3',
+        ExpressionAttributeNames: {
+          '#status': 'status'
+        },
+        ExpressionAttributeValues: {
+          ':status': 'completed',
+          ':completedAt': Date.now(),
+          ':hasS3': !!BUCKET_NAME
+        }
+      }));
+    } catch (dbError) {
+      console.error('DynamoDB update failed (non-fatal):', dbError.message);
+    }
 
     console.log('Refactoring completed', { sessionId });
 

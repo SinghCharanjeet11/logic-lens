@@ -1,13 +1,17 @@
 const { BedrockRuntimeClient, InvokeModelCommand } = require('@aws-sdk/client-bedrock-runtime');
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, GetCommand, UpdateCommand } = require('@aws-sdk/lib-dynamodb');
+const { S3Client, GetObjectCommand, PutObjectCommand } = require('@aws-sdk/client-s3');
 
-const bedrockClient = new BedrockRuntimeClient({ region: process.env.AWS_REGION || 'us-east-1' });
-const dynamoClient = DynamoDBDocumentClient.from(new DynamoDBClient({ region: process.env.AWS_REGION || 'us-east-1' }));
+const region = process.env.AWS_REGION || 'us-east-1';
+const bedrockClient = new BedrockRuntimeClient({ region });
+const dynamoClient = DynamoDBDocumentClient.from(new DynamoDBClient({ region }));
+const s3Client = new S3Client({ region });
 
-// Claude 3.5 Sonnet model ID
+// Amazon Nova 2 Lite model ID
 const MODEL_ID = process.env.BEDROCK_MODEL_ID || 'us.amazon.nova-2-lite-v1:0';
 const TABLE_NAME = process.env.DYNAMODB_TABLE || 'LogicLensSessionsTable';
+const BUCKET_NAME = process.env.S3_BUCKET_NAME;
 
 exports.handler = async (event) => {
   console.log('Gap Detection Lambda triggered', { event });
@@ -52,38 +56,83 @@ exports.handler = async (event) => {
     }
 
     const session = sessionResult.Item;
+    let code = session.code;
+    let questions = session.questions;
+
+    // --- S3 Retrieval Logic ---
+    if (session.hasS3 && BUCKET_NAME) {
+      try {
+        console.log('Fetching data from S3...');
+        // Fetch code
+        const codeRes = await s3Client.send(new GetObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: `sessions/${sessionId}/code.txt`
+        }));
+        code = await codeRes.Body.transformToString();
+
+        // Fetch questions
+        const questionsRes = await s3Client.send(new GetObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: `sessions/${sessionId}/questions.json`
+        }));
+        questions = JSON.parse(await questionsRes.Body.transformToString());
+      } catch (s3ReadError) {
+        console.error('Failed to read from S3:', s3ReadError.message);
+        if (!code || !questions) {
+          return errorResponse(500, 'Failed to retrieve session data from S3');
+        }
+      }
+    }
 
     // Analyze answers and detect gaps
     const analysis = await analyzeAnswers(
-      session.code,
-      session.questions,
+      code,
+      questions,
       answers,
       session.language || 'en'
     );
 
-    // Strip undefined values before DynamoDB write (DynamoDB rejects undefined)
-    const cleanAnalysis = removeUndefined(analysis);
-    const cleanAnswers = removeUndefined(answers);
+    // --- S3 Storage Logic ---
+    if (BUCKET_NAME) {
+      try {
+        // Store answers
+        await s3Client.send(new PutObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: `sessions/${sessionId}/answers.json`,
+          Body: JSON.stringify(answers),
+          ContentType: 'application/json'
+        }));
+
+        // Store analysis
+        await s3Client.send(new PutObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: `sessions/${sessionId}/analysis.json`,
+          Body: JSON.stringify(analysis),
+          ContentType: 'application/json'
+        }));
+        console.log('Analysis results stored in S3');
+      } catch (s3WriteError) {
+        console.warn('Failed to store analysis in S3 (non-fatal):', s3WriteError.message);
+      }
+    }
 
     // Try to update session in DynamoDB (non-fatal if it fails)
     try {
       await dynamoClient.send(new UpdateCommand({
         TableName: TABLE_NAME,
         Key: { sessionId },
-        UpdateExpression: 'SET answers = :answers, analysis = :analysis, #status = :status, updatedAt = :updatedAt',
+        UpdateExpression: 'SET #status = :status, updatedAt = :updatedAt, hasAnalysisInS3 = :hasS3',
         ExpressionAttributeNames: {
           '#status': 'status'
         },
         ExpressionAttributeValues: {
-          ':answers': cleanAnswers,
-          ':analysis': cleanAnalysis,
           ':status': 'analysis_complete',
-          ':updatedAt': Date.now()
+          ':updatedAt': Date.now(),
+          ':hasS3': !!BUCKET_NAME
         }
       }));
     } catch (dbError) {
       console.error('DynamoDB update failed (non-fatal):', dbError.message);
-      // Continue — still return the analysis to the user
     }
 
     console.log('Gap detection completed', {
