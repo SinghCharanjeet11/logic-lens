@@ -132,10 +132,10 @@ exports.handler = async (event) => {
     // Store session in DynamoDB (LogicLensSessionsTable)
     const session = {
       sessionId: finalSessionId,
-      // code, // Removed code from DynamoDB
+      code,
       context,
       language,
-      // questions, // Removed questions from DynamoDB
+      questions,
       createdAt: Date.now(),
       ttl: Math.floor(Date.now() / 1000) + (24 * 60 * 60), // 24 hours
       status: 'questions_generated',
