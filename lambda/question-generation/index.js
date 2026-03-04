@@ -1,13 +1,15 @@
 const { BedrockRuntimeClient, InvokeModelCommand } = require('@aws-sdk/client-bedrock-runtime');
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
-const { DynamoDBDocumentClient, PutCommand } = require('@aws-sdk/lib-dynamodb');
+const { DynamoDBDocumentClient, PutCommand, GetCommand } = require('@aws-sdk/lib-dynamodb');
+const crypto = require('crypto');
 
 const bedrockClient = new BedrockRuntimeClient({ region: process.env.AWS_REGION || 'us-east-1' });
 const dynamoClient = DynamoDBDocumentClient.from(new DynamoDBClient({ region: process.env.AWS_REGION || 'us-east-1' }));
 
-// Claude 3.5 Sonnet model ID
+// Amazon Nova 2 Lite model ID
 const MODEL_ID = process.env.BEDROCK_MODEL_ID || 'us.amazon.nova-2-lite-v1:0';
 const TABLE_NAME = process.env.DYNAMODB_TABLE || 'LogicLensSessionsTable';
+const CACHE_TABLE = 'LogicLens-Cache';
 
 exports.handler = async (event) => {
   console.log('Question Generation Lambda triggered', { event: JSON.stringify(event) });
@@ -47,10 +49,58 @@ exports.handler = async (event) => {
       return errorResponse(400, 'Invalid context. Must be: understanding, debugging, or optimization');
     }
 
-    // Generate questions using Bedrock
-    const questions = await generateQuestions(code, context, language, difficulty);
+    // --- Caching Logic ---
+    const normalizedCode = code.trim().replace(/\s+/g, ' ');
+    const cacheKey = crypto.createHash('sha256')
+      .update(`${normalizedCode}|${context}|${difficulty}|${language}`)
+      .digest('hex');
 
-    // Store session in DynamoDB
+    console.log('Checking cache...', { cacheKey });
+    let questions;
+    let cacheHit = false;
+
+    try {
+      const cacheResult = await dynamoClient.send(new GetCommand({
+        TableName: CACHE_TABLE,
+        Key: { cacheKey }
+      }));
+
+      if (cacheResult.Item) {
+        console.log('Cache HIT - reusing questions');
+        questions = cacheResult.Item.response;
+        cacheHit = true;
+      }
+    } catch (cacheError) {
+      console.warn('Cache lookup failed, proceeding with fresh generation', cacheError);
+    }
+
+    if (!cacheHit) {
+      console.log('Cache MISS - generating from Bedrock');
+      // Generate questions using Bedrock
+      questions = await generateQuestions(code, context, language, difficulty);
+
+      // Store in cache table (expires in 7 days)
+      try {
+        await dynamoClient.send(new PutCommand({
+          TableName: CACHE_TABLE,
+          Item: {
+            cacheKey,
+            response: questions,
+            code: code.substring(0, 100) + '...', // For debugging
+            context,
+            difficulty,
+            language,
+            createdAt: Date.now(),
+            ttl: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60)
+          }
+        }));
+        console.log('Cache entry created');
+      } catch (cacheSaveError) {
+        console.warn('Failed to save to cache', cacheSaveError);
+      }
+    }
+
+    // Store session in DynamoDB (LogicLensSessionsTable)
     const session = {
       sessionId: sessionId || generateSessionId(),
       code,
@@ -59,7 +109,8 @@ exports.handler = async (event) => {
       questions,
       createdAt: Date.now(),
       ttl: Math.floor(Date.now() / 1000) + (24 * 60 * 60), // 24 hours
-      status: 'questions_generated'
+      status: 'questions_generated',
+      cacheHit
     };
 
     await dynamoClient.send(new PutCommand({
@@ -67,12 +118,13 @@ exports.handler = async (event) => {
       Item: session
     }));
 
-    console.log('Questions generated successfully', { sessionId: session.sessionId, questionCount: questions.length });
+    console.log('Final response prepared', { sessionId: session.sessionId, cacheHit });
 
     return successResponse({
       sessionId: session.sessionId,
       questions,
-      message: 'Questions generated successfully'
+      cacheHit,
+      message: cacheHit ? 'Reused cached questions' : 'Questions generated successfully'
     });
 
   } catch (error) {

@@ -1,0 +1,27 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'DynamoDB table for LogicLens semantic caching'
+
+Resources:
+  LogicLensCacheTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: LogicLens-Cache
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: cacheKey
+          AttributeType: S
+      KeySchema:
+        - AttributeName: cacheKey
+          KeyType: HASH
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+      Tags:
+        - Key: Project
+          Value: LogicLens
+
+Outputs:
+  TableName:
+    Value: !Ref LogicLensCacheTable
+    Export:
+      Name: LogicLens-CacheTableName
