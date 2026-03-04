@@ -78,7 +78,7 @@ export default function CodeEditor({
             <div className="w-3 h-3 rounded-full bg-amber-400/80 hover:bg-amber-400 transition-colors" />
             <div className="w-3 h-3 rounded-full bg-emerald-400/80 hover:bg-emerald-400 transition-colors" />
           </div>
-          
+
           {/* Filename with language badge */}
           <div className="flex items-center gap-2 flex-1 justify-center">
             <span className="text-slate-400 text-xs font-mono">
@@ -90,13 +90,12 @@ export default function CodeEditor({
               </span>
             )}
           </div>
-          
+
           {/* Line count badge */}
-          <span className={`text-xs font-mono px-2 py-0.5 rounded-full ${
-            isOverLimit 
-              ? 'bg-red-500/20 text-red-400' 
+          <span className={`text-xs font-mono px-2 py-0.5 rounded-full ${isOverLimit
+              ? 'bg-red-500/20 text-red-400'
               : 'bg-slate-700 text-slate-400'
-          }`}>
+            }`}>
             {lineCount} / {maxLines}
           </span>
         </div>
@@ -111,9 +110,9 @@ export default function CodeEditor({
             <p className="text-slate-500 text-sm">JavaScript, Python, or any language · 10+ lines</p>
           </div>
         )}
-        
+
         {/* Monaco Editor */}
-        <div className="h-[452px]">
+        <div className="min-h-[350px] h-[calc(100vh-280px)] max-h-[550px]">
           <Editor
             height="100%"
             language={language}
@@ -143,7 +142,7 @@ export default function CodeEditor({
           />
         </div>
       </div>
-      
+
       {/* Over-limit warning */}
       {isOverLimit && (
         <div className="mt-3 p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-sm flex items-center gap-2">

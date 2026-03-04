@@ -10,6 +10,7 @@ import ShareResultsCard from '@/components/ShareResultsCard';
 import { Question, Answer, Analysis } from '@/lib/types';
 import { apiRequest } from '@/services/aws-config';
 import { detectLanguage } from '@/lib/languageDetector';
+import ThemeToggle from '@/components/ThemeToggle';
 import { useGameProgress } from '@/hooks/useGameProgress';
 
 // Dynamic import of Monaco Editor to prevent SSR hydration issues
@@ -226,30 +227,30 @@ export default function WorkspacePage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 relative overflow-hidden">
       {/* Background decoration */}
-      <div className="absolute top-0 left-0 right-0 h-[500px] bg-gradient-to-b from-indigo-100/50 via-violet-50/30 to-transparent pointer-events-none" />
-      <div className="absolute top-20 -right-40 w-80 h-80 bg-violet-200/20 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute top-40 -left-40 w-80 h-80 bg-indigo-200/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 left-0 right-0 h-[500px] bg-gradient-to-b from-indigo-100/50 via-violet-50/30 to-transparent dark:from-indigo-950/30 dark:via-violet-950/20 dark:to-transparent pointer-events-none" />
+      <div className="absolute top-20 -right-40 w-80 h-80 bg-violet-200/20 dark:bg-violet-900/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-40 -left-40 w-80 h-80 bg-indigo-200/20 dark:bg-indigo-900/20 rounded-full blur-3xl pointer-events-none" />
 
       {/* Content sits on top */}
       <div className="relative z-10">
         {/* Header */}
-        <header className="bg-white/70 backdrop-blur-2xl backdrop-saturate-150 border-b border-white/40 sticky top-0 z-50 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+        <header className="bg-white/70 dark:bg-slate-900/70 backdrop-blur-2xl backdrop-saturate-150 border-b border-white/40 dark:border-slate-800/40 sticky top-0 z-50 shadow-[0_1px_3px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.2)]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex justify-between items-center gap-4">
               {/* Left side: Home button + Logo */}
-              <div className="flex items-center gap-6">
+              <div className="flex items-center gap-3">
                 {/* Back to Home Button */}
                 <Link
                   href="/"
-                  className="flex items-center gap-1.5 px-3 py-2 text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all text-sm font-medium group"
+                  className="flex items-center gap-1.5 px-3 py-2 text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 rounded-lg transition-all text-sm font-medium group"
                   aria-label="Back to home"
                 >
                   <svg className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                   </svg>
-                  <span>Home</span>
+                  <span className="hidden sm:inline">Home</span>
                 </Link>
 
                 {/* Logo */}
@@ -267,17 +268,16 @@ export default function WorkspacePage() {
                   </div>
                   {/* Text */}
                   <div>
-                    <h1 className="text-lg font-bold text-slate-900 leading-tight tracking-tight">
-                      Logic<span className="text-indigo-600">Lens</span>
+                    <h1 className="text-lg font-bold text-slate-900 dark:text-white leading-tight tracking-tight">
+                      Logic<span className="text-indigo-600 dark:text-indigo-400">Lens</span>
                     </h1>
-                    <p className="text-[9px] text-slate-400 font-medium tracking-wider uppercase leading-none">
+                    <p className="text-[9px] text-slate-400 dark:text-slate-500 font-medium tracking-wider uppercase leading-none">
                       {isHindi ? 'Code Reasoning जांचें' : 'Code Reasoning Check'}
                     </p>
                   </div>
                 </div>
               </div>
 
-              {/* Step Indicator */}
               <div className="hidden md:flex items-center gap-2">
                 {[
                   { label: 'Paste Code', step: 'input' as WorkflowStep },
@@ -288,10 +288,10 @@ export default function WorkspacePage() {
                     <div className={`
                     flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all
                     ${step === s.step
-                        ? 'bg-indigo-100 text-indigo-700 ring-2 ring-indigo-500/20'
+                        ? 'bg-indigo-100 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-400 ring-2 ring-indigo-500/20'
                         : (['input', 'questions', 'results'] as WorkflowStep[]).indexOf(step) > i
-                          ? 'bg-emerald-100 text-emerald-700'
-                          : 'bg-slate-100 text-slate-400'
+                          ? 'bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500'
                       }
                   `}>
                       <span className="w-5 h-5 rounded-full bg-current/10 flex items-center justify-center text-[11px]">
@@ -300,26 +300,42 @@ export default function WorkspacePage() {
                       {s.label}
                     </div>
                     {i < arr.length - 1 && (
-                      <div className={`w-6 h-0.5 rounded ${(['input', 'questions', 'results'] as WorkflowStep[]).indexOf(step) > i ? 'bg-emerald-300' : 'bg-slate-200'
+                      <div className={`w-8 h-0.5 rounded-full ${(['input', 'questions', 'results'] as WorkflowStep[]).indexOf(step) > i ? 'bg-emerald-300 dark:bg-emerald-700' : 'bg-slate-200 dark:bg-slate-700'
                         }`} />
                     )}
                   </div>
                 ))}
               </div>
 
+              {/* Mobile Step Indicator */}
+              <div className="md:hidden flex items-center gap-2">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-100 dark:border-indigo-800 rounded-full">
+                  <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">
+                    {step === 'input' ? '1' : step === 'questions' ? '2' : '3'}/3
+                  </span>
+                  <span className="text-xs font-medium text-indigo-500 dark:text-indigo-400">
+                    {step === 'input'
+                      ? (isHindi ? 'Code' : 'Code')
+                      : step === 'questions'
+                        ? (isHindi ? 'सवाल' : 'Answer')
+                        : (isHindi ? 'नतीजे' : 'Results')}
+                  </span>
+                </div>
+              </div>
+
               <div className="flex items-center gap-3">
                 {/* Streak & Sessions Pills */}
                 <div className="hidden sm:flex items-center gap-2">
                   {streakDays > 0 && (
-                    <div className="flex items-center gap-1 px-2.5 py-1.5 bg-orange-50 border border-orange-200 rounded-full">
+                    <div className="flex items-center gap-1 px-2.5 py-1.5 bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 rounded-full">
                       <span className="text-sm">🔥</span>
-                      <span className="text-[11px] font-bold text-orange-700">
+                      <span className="text-[11px] font-bold text-orange-700 dark:text-orange-400">
                         {streakDays} {streakDays === 1 ? 'day' : 'days'}
                       </span>
                     </div>
                   )}
-                  <div className="flex items-center gap-1 px-2.5 py-1.5 bg-indigo-50 border border-indigo-200 rounded-full">
-                    <span className="text-[11px] font-bold text-indigo-700">
+                  <div className="flex items-center gap-1 px-2.5 py-1.5 bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800 rounded-full">
+                    <span className="text-[11px] font-bold text-indigo-700 dark:text-indigo-400">
                       {totalSessions} {totalSessions === 1 ? 'session' : 'sessions'}
                     </span>
                   </div>
@@ -330,8 +346,8 @@ export default function WorkspacePage() {
                   <button
                     onClick={() => setShowAchievements(!showAchievements)}
                     className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all ${showAchievements
-                      ? 'bg-amber-100 text-amber-800 ring-2 ring-amber-300'
-                      : 'text-slate-500 hover:text-amber-700 hover:bg-amber-50'
+                      ? 'bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-400 ring-2 ring-amber-300 dark:ring-amber-700'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-amber-700 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30'
                       }`}
                     aria-label="View achievements"
                   >
@@ -351,15 +367,15 @@ export default function WorkspacePage() {
                         className="fixed inset-0 z-40"
                         onClick={() => setShowAchievements(false)}
                       />
-                      <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-2xl shadow-2xl shadow-slate-200/60 border border-slate-200 p-4 z-50 animate-fade-in">
+                      <div className="absolute right-0 top-full mt-2 w-72 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl shadow-slate-200/60 dark:shadow-slate-950/60 border border-slate-200 dark:border-slate-700 p-4 z-50 animate-fade-in">
                         {/* Header */}
                         <div className="flex items-center justify-between mb-3">
-                          <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                          <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
                             🏅 {isHindi ? 'उपलब्धियाँ' : 'Achievements'}
                           </h3>
                           <button
                             onClick={() => setShowAchievements(false)}
-                            className="text-slate-300 hover:text-slate-500 text-lg"
+                            className="text-slate-300 dark:text-slate-500 hover:text-slate-500 dark:hover:text-slate-300 text-lg"
                           >
                             ✕
                           </button>
@@ -368,13 +384,13 @@ export default function WorkspacePage() {
                         {/* Stats row (mobile-visible) */}
                         <div className="flex gap-2 mb-3 sm:hidden">
                           {streakDays > 0 && (
-                            <div className="flex items-center gap-1 px-2.5 py-1 bg-orange-50 border border-orange-200 rounded-full">
+                            <div className="flex items-center gap-1 px-2.5 py-1 bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 rounded-full">
                               <span className="text-sm">🔥</span>
-                              <span className="text-[11px] font-bold text-orange-700">{streakDays} days</span>
+                              <span className="text-[11px] font-bold text-orange-700 dark:text-orange-400">{streakDays} days</span>
                             </div>
                           )}
-                          <div className="flex items-center gap-1 px-2.5 py-1 bg-indigo-50 border border-indigo-200 rounded-full">
-                            <span className="text-[11px] font-bold text-indigo-700">{totalSessions} sessions</span>
+                          <div className="flex items-center gap-1 px-2.5 py-1 bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800 rounded-full">
+                            <span className="text-[11px] font-bold text-indigo-700 dark:text-indigo-400">{totalSessions} sessions</span>
                           </div>
                         </div>
 
@@ -384,10 +400,10 @@ export default function WorkspacePage() {
                             {allBadges.filter(b => b.earned).map(badge => (
                               <div
                                 key={badge.id}
-                                className="flex flex-col items-center gap-1 p-2.5 bg-gradient-to-b from-amber-50 to-yellow-50 border border-amber-200 rounded-xl"
+                                className="flex flex-col items-center gap-1 p-2.5 bg-gradient-to-b from-amber-50 to-yellow-50 dark:from-amber-950/30 dark:to-yellow-950/20 border border-amber-200 dark:border-amber-800 rounded-xl"
                               >
                                 <span className="text-xl">{badge.icon}</span>
-                                <span className="text-[9px] font-bold text-amber-800 text-center leading-tight">
+                                <span className="text-[9px] font-bold text-amber-800 dark:text-amber-400 text-center leading-tight">
                                   {isHindi ? badge.nameHi : badge.name}
                                 </span>
                               </div>
@@ -401,7 +417,7 @@ export default function WorkspacePage() {
                             {allBadges.filter(b => !b.earned).map(badge => (
                               <div
                                 key={badge.id}
-                                className="flex flex-col items-center gap-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl opacity-40"
+                                className="flex flex-col items-center gap-1 p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl opacity-40"
                                 title={isHindi ? badge.descriptionHi : badge.description}
                               >
                                 <span className="text-xl grayscale">{badge.icon}</span>
@@ -425,12 +441,12 @@ export default function WorkspacePage() {
                 </div>
 
                 {/* Language Toggle - Segmented Control */}
-                <div className="flex bg-slate-100 rounded-lg p-0.5 border border-slate-200">
+                <div className="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-0.5 border border-slate-200 dark:border-slate-700">
                   <button
                     onClick={() => setLanguage('en')}
                     className={`px-3.5 py-1.5 rounded-md text-xs font-semibold transition-all duration-200 ${language === 'en'
-                      ? 'bg-white text-slate-900 shadow-sm'
-                      : 'text-slate-500 hover:text-slate-700'
+                      ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
                       }`}
                   >
                     EN
@@ -438,17 +454,20 @@ export default function WorkspacePage() {
                   <button
                     onClick={() => setLanguage('hi')}
                     className={`px-3.5 py-1.5 rounded-md text-xs font-semibold transition-all duration-200 ${language === 'hi'
-                      ? 'bg-white text-slate-900 shadow-sm'
-                      : 'text-slate-500 hover:text-slate-700'
+                      ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
                       }`}
                   >
                     हिंदी
                   </button>
                 </div>
+
+                <ThemeToggle />
+
                 {step !== 'input' && (
                   <button
                     onClick={handleReset}
-                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
+                    className="px-4 py-2 bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors text-sm font-medium"
                   >
                     ↻ {isHindi ? 'नया शुरू करें' : 'Start Over'}
                   </button>
@@ -461,10 +480,10 @@ export default function WorkspacePage() {
         {/* Error Banner */}
         {error && (
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
+            <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg p-4 flex items-start gap-3">
               <span className="text-red-500 text-xl">⚠️</span>
               <div className="flex-1">
-                <p className="text-red-800 font-medium">{error}</p>
+                <p className="text-red-800 dark:text-red-300 font-medium">{error}</p>
               </div>
               <button
                 onClick={() => setError(null)}
@@ -481,14 +500,14 @@ export default function WorkspacePage() {
           {step === 'input' && (
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
               {/* Left: Code Input - 60% width */}
-              <div className="lg:col-span-3 bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                <h2 className="text-lg font-bold text-slate-900 mb-1">
+              <div className="lg:col-span-3 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6">
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-1">
                   {isHindi ? 'अपना Code Paste करें' : 'Paste Your Code'}
                 </h2>
-                <p className="text-sm text-slate-500 mb-1">
-                  Detected language: <span className="font-medium text-slate-700">{detectedLang}</span>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">
+                  Detected language: <span className="font-medium text-slate-700 dark:text-slate-300">{detectedLang}</span>
                 </p>
-                <p className="text-xs text-slate-400 mb-4">
+                <p className="text-xs text-slate-400 dark:text-slate-500 mb-4">
                   {isHindi ? 'सार्थक code paste करें — हम logic पर focus करते हैं, syntax errors पर नहीं' : 'Paste meaningful code — we focus on logic, not syntax errors'}
                 </p>
                 <div className="h-[500px]">
@@ -501,51 +520,53 @@ export default function WorkspacePage() {
               </div>
 
               {/* Right: Context Selection - 40% width */}
-              <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col">
-                <h2 className="text-lg font-bold text-slate-900 mb-1">
+              <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 flex flex-col">
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-1">
                   {isHindi ? 'अपना Goal चुनें' : 'Choose Your Goal'}
                 </h2>
                 <p className="text-sm text-slate-400 mb-1">Select what you want to focus on</p>
                 <p className="text-xs text-slate-500 mb-5">
                   {isHindi ? 'आपकी choice तय करती है कि हम कैसे questions पूछेंगे' : 'Your choice decides the kind of questions we ask'}
                 </p>
-                <ContextSelector
-                  value={context}
-                  onChange={setContext}
-                  language={language}
-                />
+                <div className="flex-1">
+                  <ContextSelector
+                    value={context}
+                    onChange={setContext}
+                    language={language}
+                  />
 
-                {/* Difficulty Level Selector */}
-                <div className="mt-5">
-                  <p className="text-sm font-semibold text-slate-700 mb-2">
-                    {isHindi ? 'कठिनाई स्तर' : 'Difficulty Level'}
-                  </p>
-                  <div className="flex bg-slate-100 rounded-lg p-1 border border-slate-200">
-                    {[
-                      { value: 'beginner' as const, label: isHindi ? '🌱 शुरुआती' : '🌱 Beginner', color: 'emerald' },
-                      { value: 'intermediate' as const, label: isHindi ? '⚡ मध्यम' : '⚡ Intermediate', color: 'indigo' },
-                      { value: 'advanced' as const, label: isHindi ? '🔥 उन्नत' : '🔥 Advanced', color: 'rose' },
-                    ].map((d) => (
-                      <button
-                        key={d.value}
-                        onClick={() => setDifficulty(d.value)}
-                        className={`flex-1 px-2 py-2 rounded-md text-xs font-semibold transition-all duration-200 ${difficulty === d.value
-                          ? 'bg-white text-slate-900 shadow-sm'
-                          : 'text-slate-500 hover:text-slate-700'
-                          }`}
-                      >
-                        {d.label}
-                      </button>
-                    ))}
+                  {/* Difficulty Level Selector */}
+                  <div className="mt-5">
+                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                      {isHindi ? 'कठिनाई स्तर' : 'Difficulty Level'}
+                    </p>
+                    <div className="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1 border border-slate-200 dark:border-slate-700">
+                      {[
+                        { value: 'beginner' as const, label: isHindi ? '🌱 शुरुआती' : '🌱 Beginner', color: 'emerald' },
+                        { value: 'intermediate' as const, label: isHindi ? '⚡ मध्यम' : '⚡ Intermediate', color: 'indigo' },
+                        { value: 'advanced' as const, label: isHindi ? '🔥 उन्नत' : '🔥 Advanced', color: 'rose' },
+                      ].map((d) => (
+                        <button
+                          key={d.value}
+                          onClick={() => setDifficulty(d.value)}
+                          className={`flex-1 px-2 py-2 rounded-md text-xs font-semibold transition-all duration-200 ${difficulty === d.value
+                            ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
+                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+                            }`}
+                        >
+                          {d.label}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-[10px] text-slate-400 mt-1.5">
+                      {difficulty === 'beginner' && (isHindi ? 'Output और basic logic के सवाल' : 'Questions about output & basic logic')}
+                      {difficulty === 'intermediate' && (isHindi ? 'Edge cases और data flow के सवाल' : 'Questions about edge cases & data flow')}
+                      {difficulty === 'advanced' && (isHindi ? 'Complexity, design patterns और tradeoffs' : 'Complexity, design patterns & tradeoffs')}
+                    </p>
                   </div>
-                  <p className="text-[10px] text-slate-400 mt-1.5">
-                    {difficulty === 'beginner' && (isHindi ? 'Output और basic logic के सवाल' : 'Questions about output & basic logic')}
-                    {difficulty === 'intermediate' && (isHindi ? 'Edge cases और data flow के सवाल' : 'Questions about edge cases & data flow')}
-                    {difficulty === 'advanced' && (isHindi ? 'Complexity, design patterns और tradeoffs' : 'Complexity, design patterns & tradeoffs')}
-                  </p>
                 </div>
 
-                <div className="mt-auto pt-6">
+                <div className="pt-5 sticky bottom-0 bg-white dark:bg-slate-900">
                   <button
                     onClick={handleGenerateQuestions}
                     disabled={!code.trim() || !context || isLoading}
@@ -574,11 +595,11 @@ export default function WorkspacePage() {
           {step === 'questions' && (
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
               {/* Left: Code (Read-only) */}
-              <div className="lg:col-span-2 bg-white/80 rounded-2xl shadow-sm border border-slate-200 p-6 opacity-90">
-                <h2 className="text-lg font-bold text-slate-900 mb-1">
+              <div className="lg:col-span-2 bg-white/80 dark:bg-slate-900/80 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 opacity-90">
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-1">
                   {isHindi ? 'आपका Code' : 'Your Code'}
                 </h2>
-                <p className="text-sm text-slate-400 mb-4">Reference</p>
+                <p className="text-sm text-slate-400 dark:text-slate-500 mb-4">Reference</p>
                 <div className="h-96">
                   <CodeEditor
                     value={code}
@@ -590,11 +611,11 @@ export default function WorkspacePage() {
               </div>
 
               {/* Right: Questions */}
-              <div className="lg:col-span-3 bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                <h2 className="text-lg font-bold text-slate-900 mb-1">
+              <div className="lg:col-span-3 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6">
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-1">
                   {isHindi ? 'अपनी सोच को परखें' : 'Check Your Reasoning'}
                 </h2>
-                <p className="text-sm text-slate-400 mb-1">
+                <p className="text-sm text-slate-400 dark:text-slate-500 mb-1">
                   {isHindi ? 'अपने code के बारे में सवालों के जवाब दें' : 'Answer questions about your code'}
                 </p>
                 {/* Reassurance line */}
@@ -621,14 +642,14 @@ export default function WorkspacePage() {
             return (
               <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
                 {/* Left: Code with Original/Optimal tabs */}
-                <div className="lg:col-span-2 bg-white/80 rounded-2xl shadow-sm border border-slate-200 p-6">
+                <div className="lg:col-span-2 bg-white/80 dark:bg-slate-900/80 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6">
                   {/* Tab Switcher */}
-                  <div className="flex items-center gap-1 mb-4 bg-slate-100 rounded-lg p-1">
+                  <div className="flex items-center gap-1 mb-4 bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
                     <button
                       onClick={() => setCodeTab('original')}
                       className={`flex-1 px-3 py-2 rounded-md text-xs font-semibold transition-all duration-200 ${codeTab === 'original'
-                        ? 'bg-white text-slate-900 shadow-sm'
-                        : 'text-slate-500 hover:text-slate-700'
+                        ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
+                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
                         }`}
                     >
                       📝 {isHindi ? 'Original Code' : 'Original Code'}
@@ -637,10 +658,10 @@ export default function WorkspacePage() {
                       onClick={() => setCodeTab('optimal')}
                       disabled={!optimizedCode}
                       className={`flex-1 px-3 py-2 rounded-md text-xs font-semibold transition-all duration-200 ${codeTab === 'optimal'
-                        ? 'bg-emerald-50 text-emerald-700 shadow-sm ring-1 ring-emerald-200'
+                        ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 shadow-sm ring-1 ring-emerald-200 dark:ring-emerald-800'
                         : optimizedCode
-                          ? 'text-slate-500 hover:text-emerald-600'
-                          : 'text-slate-300 cursor-not-allowed'
+                          ? 'text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400'
+                          : 'text-slate-300 dark:text-slate-600 cursor-not-allowed'
                         }`}
                     >
                       ✨ {isHindi ? 'Optimal Solution' : 'Optimal Solution'}
@@ -667,8 +688,8 @@ export default function WorkspacePage() {
 
                   {/* Optimal code badge + copy button */}
                   {codeTab === 'optimal' && optimizedCode && (
-                    <div className="mt-3 p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg flex items-center justify-between">
-                      <p className="text-xs text-emerald-700 font-medium flex items-center gap-1.5">
+                    <div className="mt-3 p-2.5 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-lg flex items-center justify-between">
+                      <p className="text-xs text-emerald-700 dark:text-emerald-400 font-medium flex items-center gap-1.5">
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
@@ -681,8 +702,8 @@ export default function WorkspacePage() {
                           setTimeout(() => setCopied(false), 2000);
                         }}
                         className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all duration-200 flex items-center gap-1.5 ${copied
-                          ? 'bg-emerald-200 text-emerald-800'
-                          : 'bg-white text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
+                          ? 'bg-emerald-200 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-300'
+                          : 'bg-white dark:bg-slate-800 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-slate-700 border border-emerald-200 dark:border-emerald-800'
                           }`}
                       >
                         {copied ? (
@@ -696,8 +717,8 @@ export default function WorkspacePage() {
                 </div>
 
                 {/* Right: Results */}
-                <div className="lg:col-span-3 bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-                  <h2 className="text-lg font-bold text-slate-900 mb-1">
+                <div className="lg:col-span-3 bg-white dark:bg-slate-900/80 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6">
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-1">
                     {isHindi ? 'आपकी समझ' : 'Your Understanding'}
                   </h2>
                   <div className="flex items-center justify-between mb-4">
@@ -706,7 +727,7 @@ export default function WorkspacePage() {
                     </p>
                     <button
                       onClick={() => setShowShareCard(true)}
-                      className="px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 border border-indigo-200"
+                      className="px-3 py-1.5 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-950/50 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 border border-indigo-200 dark:border-indigo-800"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
