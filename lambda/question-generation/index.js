@@ -6,7 +6,7 @@ const bedrockClient = new BedrockRuntimeClient({ region: process.env.AWS_REGION 
 const dynamoClient = DynamoDBDocumentClient.from(new DynamoDBClient({ region: process.env.AWS_REGION || 'us-east-1' }));
 
 // Claude 3.5 Sonnet model ID
-const MODEL_ID = process.env.BEDROCK_MODEL_ID || 'us.amazon.nova-lite-v1:0';
+const MODEL_ID = process.env.BEDROCK_MODEL_ID || 'us.amazon.nova-2-lite-v1:0';
 const TABLE_NAME = process.env.DYNAMODB_TABLE || 'LogicLensSessionsTable';
 
 exports.handler = async (event) => {

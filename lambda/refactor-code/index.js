@@ -6,12 +6,12 @@ const bedrockClient = new BedrockRuntimeClient({ region: process.env.AWS_REGION 
 const dynamoClient = DynamoDBDocumentClient.from(new DynamoDBClient({ region: process.env.AWS_REGION || 'us-east-1' }));
 
 // Use inference profile for Nova models (required for on-demand throughput)
-const MODEL_ID = 'us.amazon.nova-lite-v1:0'; // Amazon Nova Lite inference profile
+const MODEL_ID = 'us.amazon.nova-2-lite-v1:0'; // Amazon Nova 2 Lite inference profile
 const TABLE_NAME = process.env.DYNAMODB_TABLE || 'LogicLensSessionsTable';
 
 exports.handler = async (event) => {
   console.log('Refactor Code Lambda triggered', { event });
-  
+
   // Handle OPTIONS request for CORS preflight
   if (event.httpMethod === 'OPTIONS' || event.requestContext?.http?.method === 'OPTIONS') {
     return {
@@ -24,7 +24,7 @@ exports.handler = async (event) => {
       body: ''
     };
   }
-  
+
   try {
     // Parse body - handle both API Gateway formats
     let body;
@@ -35,36 +35,36 @@ exports.handler = async (event) => {
       // Direct invocation or API Gateway HTTP API format
       body = event;
     }
-    
+
     const { sessionId } = body;
-    
+
     if (!sessionId) {
       return errorResponse(400, 'sessionId required');
     }
-    
+
     // Retrieve session
     const sessionResult = await dynamoClient.send(new GetCommand({
       TableName: TABLE_NAME,
       Key: { sessionId }
     }));
-    
+
     if (!sessionResult.Item) {
       return errorResponse(404, 'Session not found');
     }
-    
+
     const session = sessionResult.Item;
-    
+
     if (!session.analysis) {
       return errorResponse(400, 'Analysis must be completed first');
     }
-    
+
     // Generate refactored code and checklist
     const refactorResult = await generateRefactoredCode(
       session.code,
       session.analysis,
       session.language || 'en'
     );
-    
+
     // Update session
     await dynamoClient.send(new UpdateCommand({
       TableName: TABLE_NAME,
@@ -80,16 +80,16 @@ exports.handler = async (event) => {
         ':completedAt': Date.now()
       }
     }));
-    
+
     console.log('Refactoring completed', { sessionId });
-    
+
     return successResponse({
       sessionId,
       refactoredCode: refactorResult.refactoredCode,
       checklist: refactorResult.checklist,
       message: 'Refactoring completed successfully'
     });
-    
+
   } catch (error) {
     console.error('Error in refactoring:', error);
     return errorResponse(500, 'Failed to generate refactored code', error.message);
@@ -98,16 +98,16 @@ exports.handler = async (event) => {
 
 async function generateRefactoredCode(code, analysis, language) {
   const isHindi = language === 'hi';
-  
+
   const systemPrompt = isHindi
     ? 'आप एक expert software engineer हैं जो code को refactor करते हैं और debugging checklists बनाते हैं।'
     : 'You are an expert software engineer who refactors code and creates debugging checklists.';
-  
+
   // Summarize gaps for context
-  const gapsSummary = analysis.gaps.map(g => 
+  const gapsSummary = analysis.gaps.map(g =>
     `- ${g.category}: ${g.title} (Line ${g.lineReferences?.join(', ') || 'N/A'})`
   ).join('\n');
-  
+
   const userPrompt = `
 Original code:
 \`\`\`
@@ -158,16 +158,16 @@ Return ONLY a JSON object in this exact format:
       temperature: 0.3
     }
   };
-  
+
   const command = new InvokeModelCommand({
     modelId: MODEL_ID,
     contentType: 'application/json',
     accept: 'application/json',
     body: JSON.stringify(payload)
   });
-  
+
   console.log('Invoking Bedrock with model:', MODEL_ID);
-  
+
   let response;
   try {
     response = await bedrockClient.send(command);
@@ -180,24 +180,24 @@ Return ONLY a JSON object in this exact format:
     });
     throw new Error(`Bedrock API error: ${bedrockError.message}`);
   }
-  
+
   const responseBody = JSON.parse(new TextDecoder().decode(response.body));
-  
-  console.log('Bedrock response:', { 
+
+  console.log('Bedrock response:', {
     modelId: MODEL_ID,
     inputTokens: responseBody.usage?.inputTokens,
     outputTokens: responseBody.usage?.outputTokens,
     stopReason: responseBody.stopReason
   });
-  
+
   // Extract JSON from response - Nova format
   const content = responseBody.output.message.content[0].text;
   const jsonMatch = content.match(/\{[\s\S]*\}/);
-  
+
   if (!jsonMatch) {
     throw new Error('Failed to parse refactored code from Bedrock response');
   }
-  
+
   return JSON.parse(jsonMatch[0]);
 }
 

@@ -113,7 +113,7 @@ export default function CodeEditor({
         )}
         
         {/* Monaco Editor */}
-        <div className="h-full">
+        <div className="h-[452px]">
           <Editor
             height="100%"
             language={language}

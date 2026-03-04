@@ -6,7 +6,6 @@ import dynamic from 'next/dynamic';
 import ContextSelector, { ContextType } from '@/components/ContextSelector';
 import QuestionPanel from '@/components/QuestionPanel';
 import ResultsPanel from '@/components/ResultsPanel';
-import BadgesDisplay from '@/components/BadgesDisplay';
 import ShareResultsCard from '@/components/ShareResultsCard';
 import { Question, Answer, Analysis } from '@/lib/types';
 import { apiRequest } from '@/services/aws-config';
@@ -40,6 +39,7 @@ export default function WorkspacePage() {
   const [copied, setCopied] = useState(false);
   const [difficulty, setDifficulty] = useState<'beginner' | 'intermediate' | 'advanced'>('intermediate');
   const [showShareCard, setShowShareCard] = useState(false);
+  const [showAchievements, setShowAchievements] = useState(false);
   const { recordSession, allBadges, streakDays, totalSessions } = useGameProgress();
 
   const isHindi = language === 'hi';
@@ -308,6 +308,122 @@ export default function WorkspacePage() {
               </div>
 
               <div className="flex items-center gap-3">
+                {/* Streak & Sessions Pills */}
+                <div className="hidden sm:flex items-center gap-2">
+                  {streakDays > 0 && (
+                    <div className="flex items-center gap-1 px-2.5 py-1.5 bg-orange-50 border border-orange-200 rounded-full">
+                      <span className="text-sm">🔥</span>
+                      <span className="text-[11px] font-bold text-orange-700">
+                        {streakDays} {streakDays === 1 ? 'day' : 'days'}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-1 px-2.5 py-1.5 bg-indigo-50 border border-indigo-200 rounded-full">
+                    <span className="text-[11px] font-bold text-indigo-700">
+                      {totalSessions} {totalSessions === 1 ? 'session' : 'sessions'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Achievements Trophy Dropdown */}
+                <div className="relative">
+                  <button
+                    onClick={() => setShowAchievements(!showAchievements)}
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all ${showAchievements
+                      ? 'bg-amber-100 text-amber-800 ring-2 ring-amber-300'
+                      : 'text-slate-500 hover:text-amber-700 hover:bg-amber-50'
+                      }`}
+                    aria-label="View achievements"
+                  >
+                    <span className="text-base">🏆</span>
+                    {allBadges.filter(b => b.earned).length > 0 && (
+                      <span className="w-4 h-4 bg-amber-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                        {allBadges.filter(b => b.earned).length}
+                      </span>
+                    )}
+                  </button>
+
+                  {/* Dropdown */}
+                  {showAchievements && (
+                    <>
+                      {/* Backdrop */}
+                      <div
+                        className="fixed inset-0 z-40"
+                        onClick={() => setShowAchievements(false)}
+                      />
+                      <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-2xl shadow-2xl shadow-slate-200/60 border border-slate-200 p-4 z-50 animate-fade-in">
+                        {/* Header */}
+                        <div className="flex items-center justify-between mb-3">
+                          <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                            🏅 {isHindi ? 'उपलब्धियाँ' : 'Achievements'}
+                          </h3>
+                          <button
+                            onClick={() => setShowAchievements(false)}
+                            className="text-slate-300 hover:text-slate-500 text-lg"
+                          >
+                            ✕
+                          </button>
+                        </div>
+
+                        {/* Stats row (mobile-visible) */}
+                        <div className="flex gap-2 mb-3 sm:hidden">
+                          {streakDays > 0 && (
+                            <div className="flex items-center gap-1 px-2.5 py-1 bg-orange-50 border border-orange-200 rounded-full">
+                              <span className="text-sm">🔥</span>
+                              <span className="text-[11px] font-bold text-orange-700">{streakDays} days</span>
+                            </div>
+                          )}
+                          <div className="flex items-center gap-1 px-2.5 py-1 bg-indigo-50 border border-indigo-200 rounded-full">
+                            <span className="text-[11px] font-bold text-indigo-700">{totalSessions} sessions</span>
+                          </div>
+                        </div>
+
+                        {/* Earned Badges */}
+                        {allBadges.filter(b => b.earned).length > 0 && (
+                          <div className="grid grid-cols-3 gap-2 mb-3">
+                            {allBadges.filter(b => b.earned).map(badge => (
+                              <div
+                                key={badge.id}
+                                className="flex flex-col items-center gap-1 p-2.5 bg-gradient-to-b from-amber-50 to-yellow-50 border border-amber-200 rounded-xl"
+                              >
+                                <span className="text-xl">{badge.icon}</span>
+                                <span className="text-[9px] font-bold text-amber-800 text-center leading-tight">
+                                  {isHindi ? badge.nameHi : badge.name}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Unearned Badges */}
+                        {allBadges.filter(b => !b.earned).length > 0 && (
+                          <div className="grid grid-cols-3 gap-2">
+                            {allBadges.filter(b => !b.earned).map(badge => (
+                              <div
+                                key={badge.id}
+                                className="flex flex-col items-center gap-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl opacity-40"
+                                title={isHindi ? badge.descriptionHi : badge.description}
+                              >
+                                <span className="text-xl grayscale">{badge.icon}</span>
+                                <span className="text-[9px] font-semibold text-slate-500 text-center leading-tight">
+                                  {isHindi ? badge.nameHi : badge.name}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Empty state */}
+                        {allBadges.filter(b => b.earned).length === 0 && (
+                          <p className="text-xs text-slate-400 text-center py-2">
+                            {isHindi ? 'अभी तक कोई badge नहीं मिला — session पूरा करें!' : 'No badges yet — complete a session!'}
+                          </p>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
+
                 {/* Language Toggle - Segmented Control */}
                 <div className="flex bg-slate-100 rounded-lg p-0.5 border border-slate-200">
                   <button
@@ -375,7 +491,7 @@ export default function WorkspacePage() {
                 <p className="text-xs text-slate-400 mb-4">
                   {isHindi ? 'सार्थक code paste करें — हम logic पर focus करते हैं, syntax errors पर नहीं' : 'Paste meaningful code — we focus on logic, not syntax errors'}
                 </p>
-                <div className="h-96">
+                <div className="h-[500px]">
                   <CodeEditor
                     value={code}
                     onChange={setCode}
@@ -604,12 +720,6 @@ export default function WorkspacePage() {
                       analysis={analysis}
                       language={language}
                       onReset={handleReset}
-                    />
-                    <BadgesDisplay
-                      badges={allBadges}
-                      streakDays={streakDays}
-                      totalSessions={totalSessions}
-                      language={language}
                     />
                   </div>
                 </div>
