@@ -95,11 +95,11 @@ export default function QuestionPanel({
       {/* Progress Bar */}
       <div className="mb-6">
         <div className="flex justify-between items-center mb-3">
-          <span className="text-sm font-medium text-slate-500">
+          <span className="text-sm font-medium text-slate-500 dark:text-slate-400">
             {isHindi ? 'सवाल' : 'Question'} {currentIndex + 1} {isHindi ? 'का' : 'of'} {questions.length}
           </span>
         </div>
-        <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+        <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden">
           <div
             className="bg-gradient-to-r from-indigo-500 to-violet-500 h-2.5 rounded-full transition-all duration-500 ease-out"
             style={{ width: `${progress}%` }}
@@ -109,25 +109,25 @@ export default function QuestionPanel({
 
       {/* Question Card with Slide Transition */}
       <div className={`flex-1 transition-all duration-200 ease-out ${isSliding
-          ? `opacity-0 ${slideDirection === 'left' ? '-translate-x-4' : 'translate-x-4'}`
-          : 'opacity-100 translate-x-0'
+        ? `opacity-0 ${slideDirection === 'left' ? '-translate-x-4' : 'translate-x-4'}`
+        : 'opacity-100 translate-x-0'
         }`}>
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 mb-4 shadow-sm h-full">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 mb-4 shadow-sm h-full">
           {/* Focus tag */}
-          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded-full text-xs font-medium mb-4 border border-indigo-100">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 rounded-full text-xs font-medium mb-4 border border-indigo-100 dark:border-indigo-800">
             <Tag className="w-3 h-3" />
             {currentQuestion.focus?.replace('_', ' ') || 'General'}
           </div>
 
           {/* Question text */}
-          <h3 className="text-[17px] font-medium text-slate-800 leading-[1.7] mb-6 tracking-[-0.01em]">
+          <h3 className="text-[17px] font-medium text-slate-800 dark:text-slate-200 leading-[1.7] mb-6 tracking-[-0.01em]">
             {currentQuestion.question}
           </h3>
 
           {/* Answer area */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label className="block text-sm font-medium text-slate-500">
+              <label className="block text-sm font-medium text-slate-500 dark:text-slate-400">
                 {isHindi ? 'आपका सोचना:' : 'What do you think?'}
               </label>
               <VoiceInput
@@ -145,9 +145,9 @@ export default function QuestionPanel({
               placeholder={isHindi
                 ? 'बताइए कि आपके हिसाब से यहाँ क्या होगा और क्यों...'
                 : 'Explain what you think happens here and why...'}
-              className="w-full h-36 px-4 py-3.5 bg-slate-50/70 border border-slate-200 rounded-2xl text-slate-800 text-[15px] leading-relaxed
-                placeholder:text-slate-400 placeholder:text-sm
-                focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-400 focus:bg-white 
+              className="w-full h-36 px-4 py-3.5 bg-slate-50/70 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-2xl text-slate-800 dark:text-slate-200 text-[15px] leading-relaxed
+                placeholder:text-slate-400 dark:placeholder:text-slate-500 placeholder:text-sm
+                focus:ring-2 focus:ring-indigo-500/15 focus:border-indigo-400 focus:bg-white dark:focus:bg-slate-800
                 resize-none transition-all duration-200"
               disabled={isLoading}
             />
@@ -181,7 +181,7 @@ export default function QuestionPanel({
           type="button"
           onClick={handlePrevious}
           disabled={currentIndex === 0 || isLoading}
-          className="px-4 py-2.5 text-slate-600 bg-slate-100 rounded-xl hover:bg-slate-200 
+          className="px-4 py-2.5 text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700
             disabled:opacity-40 disabled:cursor-not-allowed transition-all text-sm font-medium
             flex items-center gap-1.5"
         >
@@ -200,10 +200,10 @@ export default function QuestionPanel({
                 onClick={() => setCurrentIndex(idx)}
                 title={`Question ${idx + 1}${hasAnswer ? ' ✓' : ''}`}
                 className={`h-2.5 rounded-full transition-all duration-300 ${idx === currentIndex
-                    ? 'bg-indigo-500 w-8'
-                    : hasAnswer
-                      ? 'bg-indigo-200 w-2.5 hover:bg-indigo-300'
-                      : 'bg-slate-200 w-2.5 hover:bg-slate-300'
+                  ? 'bg-indigo-500 w-8'
+                  : hasAnswer
+                    ? 'bg-indigo-200 w-2.5 hover:bg-indigo-300'
+                    : 'bg-slate-200 dark:bg-slate-700 w-2.5 hover:bg-slate-300 dark:hover:bg-slate-600'
                   }`}
                 aria-label={`Question ${idx + 1}${hasAnswer ? ', answered' : ', not answered'}`}
               />

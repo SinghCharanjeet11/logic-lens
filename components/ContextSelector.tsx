@@ -47,31 +47,31 @@ const contexts: ContextOption[] = [
 const colorMap = {
   indigo: {
     border: 'border-indigo-500',
-    bg: 'bg-indigo-50',
+    bg: 'bg-indigo-50 dark:bg-indigo-950/40',
     ring: 'ring-indigo-500/20',
-    iconBg: 'bg-indigo-100',
-    iconText: 'text-indigo-600',
-    iconBgHover: 'group-hover:bg-indigo-50',
+    iconBg: 'bg-indigo-100 dark:bg-indigo-900/60',
+    iconText: 'text-indigo-600 dark:text-indigo-400',
+    iconBgHover: 'group-hover:bg-indigo-50 dark:group-hover:bg-indigo-950',
     iconTextHover: 'group-hover:text-indigo-500',
     checkBg: 'bg-indigo-500',
   },
   red: {
     border: 'border-red-500',
-    bg: 'bg-red-50',
+    bg: 'bg-red-50 dark:bg-red-950/40',
     ring: 'ring-red-500/20',
-    iconBg: 'bg-red-100',
-    iconText: 'text-red-600',
-    iconBgHover: 'group-hover:bg-red-50',
+    iconBg: 'bg-red-100 dark:bg-red-900/60',
+    iconText: 'text-red-600 dark:text-red-400',
+    iconBgHover: 'group-hover:bg-red-50 dark:group-hover:bg-red-950',
     iconTextHover: 'group-hover:text-red-500',
     checkBg: 'bg-red-500',
   },
   amber: {
     border: 'border-amber-500',
-    bg: 'bg-amber-50',
+    bg: 'bg-amber-50 dark:bg-amber-950/40',
     ring: 'ring-amber-500/20',
-    iconBg: 'bg-amber-100',
-    iconText: 'text-amber-600',
-    iconBgHover: 'group-hover:bg-amber-50',
+    iconBg: 'bg-amber-100 dark:bg-amber-900/60',
+    iconText: 'text-amber-600 dark:text-amber-400',
+    iconBgHover: 'group-hover:bg-amber-50 dark:group-hover:bg-amber-950',
     iconTextHover: 'group-hover:text-amber-500',
     checkBg: 'bg-amber-500',
   },
@@ -92,17 +92,17 @@ export default function ContextSelector({
 
   return (
     <div className="space-y-3">
-      <label className="block text-sm font-medium text-slate-700">
+      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
         {isHindi ? 'अपना goal चुनें:' : 'Choose your goal:'}
         <span className="text-red-500 ml-1">*</span>
       </label>
-      
+
       <div className="space-y-2">
         {contexts.map((context) => {
           const colors = colorMap[context.color];
           const Icon = context.icon;
           const isSelected = value === context.value;
-          
+
           return (
             <button
               key={context.value}
@@ -112,7 +112,7 @@ export default function ContextSelector({
                 w-full text-left p-4 rounded-xl border-2 transition-all duration-200 group
                 ${isSelected
                   ? `${colors.border} ${colors.bg} ring-2 ${colors.ring} scale-[1.02]`
-                  : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm'
+                  : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-sm'
                 }
               `}
             >
@@ -122,22 +122,22 @@ export default function ContextSelector({
                   w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors
                   ${isSelected
                     ? `${colors.iconBg} ${colors.iconText}`
-                    : `bg-slate-100 text-slate-400 ${colors.iconBgHover} ${colors.iconTextHover}`
+                    : `bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-500 ${colors.iconBgHover} ${colors.iconTextHover}`
                   }
                 `}>
                   <Icon className="w-5 h-5" />
                 </div>
-                
+
                 {/* Text */}
                 <div className="flex-1 min-w-0">
-                  <div className="font-semibold text-slate-900 text-[15px]">
+                  <div className="font-semibold text-slate-900 dark:text-white text-[15px]">
                     {isHindi ? context.labelHi : context.label}
                   </div>
-                  <div className="text-sm text-slate-500 mt-0.5">
+                  <div className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
                     {isHindi ? context.descriptionHi : context.description}
                   </div>
                 </div>
-                
+
                 {/* Checkmark */}
                 {isSelected && (
                   <div className={`w-6 h-6 rounded-full ${colors.checkBg} flex items-center justify-center`}>
@@ -149,10 +149,10 @@ export default function ContextSelector({
           );
         })}
       </div>
-      
+
       <p className="text-xs text-slate-400 mt-4 flex items-center gap-1.5">
         <Info className="w-3.5 h-3.5" />
-        {isHindi 
+        {isHindi
           ? 'यह हमें सही questions पूछने में मदद करता है'
           : 'This helps us ask the right diagnostic questions'
         }

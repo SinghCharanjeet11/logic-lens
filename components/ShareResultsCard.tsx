@@ -48,10 +48,10 @@ export default function ShareResultsCard({ analysis, language = 'en', onClose }:
 
     return (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
                 {/* Close button */}
                 <div className="flex items-center justify-between px-6 pt-5 pb-2">
-                    <h3 className="text-sm font-bold text-slate-800">
+                    <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">
                         {isHindi ? '📤 अपना Score Share करें' : '📤 Share Your Score'}
                     </h3>
                     <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
