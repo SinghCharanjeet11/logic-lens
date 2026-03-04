@@ -3,6 +3,7 @@ frontend:
   phases:
     preBuild:
       commands:
+        - echo "NEXT_PUBLIC_API_GATEWAY_URL=$NEXT_PUBLIC_API_GATEWAY_URL" >> .env.production
         - npm ci
     build:
       commands:
