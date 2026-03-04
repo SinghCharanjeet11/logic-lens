@@ -32,86 +32,73 @@ export default function ResultsPanel({
         return {
           label: 'CRITICAL',
           labelHi: 'गंभीर',
-          borderColor: '#EF4444',
-          bgColor: '#FEF2F2',
-          textColor: '#DC2626',
-          dotColor: '#EF4444',
+          border: 'border-l-red-500',
+          bg: 'bg-red-50',
+          text: 'text-red-600',
+          dot: 'bg-red-500',
+          detailBorder: 'border-red-500/20',
         };
       case 'moderate':
         return {
           label: 'MODERATE',
           labelHi: 'मध्यम',
-          borderColor: '#F59E0B',
-          bgColor: '#FFFBEB',
-          textColor: '#D97706',
-          dotColor: '#F59E0B',
+          border: 'border-l-amber-500',
+          bg: 'bg-amber-50',
+          text: 'text-amber-600',
+          dot: 'bg-amber-500',
+          detailBorder: 'border-amber-500/20',
         };
       case 'minor':
         return {
           label: 'MINOR',
           labelHi: 'सुझाव',
-          borderColor: '#3B82F6',
-          bgColor: '#EFF6FF',
-          textColor: '#2563EB',
-          dotColor: '#3B82F6',
+          border: 'border-l-blue-500',
+          bg: 'bg-blue-50',
+          text: 'text-blue-600',
+          dot: 'bg-blue-500',
+          detailBorder: 'border-blue-500/20',
         };
       default:
         return {
           label: 'INFO',
           labelHi: 'जानकारी',
-          borderColor: '#94A3B8',
-          bgColor: '#F8FAFC',
-          textColor: '#64748B',
-          dotColor: '#94A3B8',
+          border: 'border-l-slate-400',
+          bg: 'bg-slate-50',
+          text: 'text-slate-500',
+          dot: 'bg-slate-400',
+          detailBorder: 'border-slate-200',
         };
     }
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+    <div className="flex flex-col gap-4">
 
       {/* Summary Stats Bar */}
-      <div style={{ display: 'flex', gap: '12px' }}>
-        <div style={{
-          flex: 1, padding: '16px', borderRadius: '12px', textAlign: 'center',
-          background: gapCount > 0 ? '#FEF2F2' : '#F0FDF4',
-          border: `1px solid ${gapCount > 0 ? '#FECACA' : '#BBF7D0'}`
-        }}>
-          <div style={{ fontSize: '28px', fontWeight: 800, color: gapCount > 0 ? '#DC2626' : '#16A34A' }}>
+      <div className="grid grid-cols-3 gap-3 stagger-children">
+        <div className={`p-4 rounded-xl text-center border ${gapCount > 0 ? 'bg-red-50 border-red-200' : 'bg-green-50 border-green-200'
+          }`}>
+          <div className={`text-[28px] font-extrabold ${gapCount > 0 ? 'text-red-600' : 'text-green-600'}`}>
             {gapCount}
           </div>
-          <div style={{
-            fontSize: '10px', fontWeight: 600, textTransform: 'uppercase' as const,
-            letterSpacing: '0.5px', marginTop: '4px', color: gapCount > 0 ? '#EF4444' : '#22C55E'
-          }}>
+          <div className={`text-[10px] font-semibold uppercase tracking-wide mt-1 ${gapCount > 0 ? 'text-red-500' : 'text-green-500'
+            }`}>
             {isHindi ? 'Gaps पाए गए' : 'Gaps Found'}
           </div>
         </div>
-        <div style={{
-          flex: 1, padding: '16px', borderRadius: '12px', textAlign: 'center',
-          background: '#F0FDF4', border: '1px solid #BBF7D0'
-        }}>
-          <div style={{ fontSize: '28px', fontWeight: 800, color: '#16A34A' }}>
+        <div className="p-4 rounded-xl text-center bg-green-50 border border-green-200">
+          <div className="text-[28px] font-extrabold text-green-600">
             {correctCount}
           </div>
-          <div style={{
-            fontSize: '10px', fontWeight: 600, textTransform: 'uppercase' as const,
-            letterSpacing: '0.5px', marginTop: '4px', color: '#22C55E'
-          }}>
+          <div className="text-[10px] font-semibold uppercase tracking-wide mt-1 text-green-500">
             {isHindi ? 'सही समझा' : 'Correct'}
           </div>
         </div>
-        <div style={{
-          flex: 1, padding: '16px', borderRadius: '12px', textAlign: 'center',
-          background: '#EEF2FF', border: '1px solid #C7D2FE'
-        }}>
-          <div style={{ fontSize: '28px', fontWeight: 800, color: '#4F46E5' }}>
+        <div className="p-4 rounded-xl text-center bg-indigo-50 border border-indigo-200">
+          <div className="text-[28px] font-extrabold text-indigo-600">
             {overallScore}%
           </div>
-          <div style={{
-            fontSize: '10px', fontWeight: 600, textTransform: 'uppercase' as const,
-            letterSpacing: '0.5px', marginTop: '4px', color: '#6366F1'
-          }}>
+          <div className="text-[10px] font-semibold uppercase tracking-wide mt-1 text-indigo-500">
             {isHindi ? 'स्कोर' : 'Score'}
           </div>
         </div>
@@ -119,7 +106,7 @@ export default function ResultsPanel({
 
       {/* Gap Cards */}
       {analysis.gaps && analysis.gaps.length > 0 && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div className="flex flex-col gap-3">
           {analysis.gaps.map((gap) => {
             const config = getSeverityConfig(gap.severity);
             const isExpanded = expandedGapId === gap.id;
@@ -127,54 +114,27 @@ export default function ResultsPanel({
             return (
               <div
                 key={gap.id}
-                style={{
-                  borderRadius: '12px',
-                  borderLeft: `4px solid ${config.borderColor}`,
-                  background: config.bgColor,
-                  overflow: 'hidden',
-                  transition: 'all 0.2s ease',
-                }}
+                className={`rounded-xl border-l-4 ${config.border} ${config.bg} overflow-hidden transition-all duration-200`}
               >
                 {/* Clickable Header */}
                 <button
                   onClick={() => toggleGap(gap.id)}
-                  style={{
-                    width: '100%',
-                    padding: '14px 16px',
-                    border: 'none',
-                    background: 'transparent',
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    justifyContent: 'space-between',
-                    gap: '12px',
-                  }}
+                  className="w-full py-3.5 px-4 bg-transparent border-none cursor-pointer text-left flex items-start justify-between gap-3"
                 >
-                  <div style={{ flex: 1 }}>
+                  <div className="flex-1">
                     {/* Severity Label */}
-                    <div style={{
-                      display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px'
-                    }}>
-                      <span style={{
-                        width: '8px', height: '8px', borderRadius: '50%',
-                        background: config.dotColor, display: 'inline-block'
-                      }} />
-                      <span style={{
-                        fontSize: '10px', fontWeight: 700, textTransform: 'uppercase' as const,
-                        letterSpacing: '0.5px', color: config.textColor
-                      }}>
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <span className={`w-2 h-2 rounded-full ${config.dot} inline-block`} />
+                      <span className={`text-[10px] font-bold uppercase tracking-wide ${config.text}`}>
                         {isHindi ? config.labelHi : config.label}
                       </span>
                     </div>
                     {/* Title */}
-                    <div style={{
-                      fontSize: '14px', fontWeight: 600, color: '#1E293B', marginBottom: '2px'
-                    }}>
+                    <div className="text-sm font-semibold text-slate-800 mb-0.5">
                       {gap.title}
                     </div>
                     {/* Short description */}
-                    <div style={{ fontSize: '12px', color: '#64748B', lineHeight: 1.4 }}>
+                    <div className="text-xs text-slate-500 leading-snug">
                       {gap.description}
                     </div>
                   </div>
@@ -182,12 +142,7 @@ export default function ResultsPanel({
                   <svg
                     width="16" height="16" viewBox="0 0 24 24" fill="none"
                     stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                    style={{
-                      transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-                      transition: 'transform 0.2s ease',
-                      flexShrink: 0,
-                      marginTop: '4px',
-                    }}
+                    className={`flex-shrink-0 mt-1 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
                   >
                     <path d="M6 9l6 6 6-6" />
                   </svg>
@@ -195,59 +150,37 @@ export default function ResultsPanel({
 
                 {/* Expanded Details */}
                 {isExpanded && (
-                  <div style={{
-                    padding: '0 16px 16px 16px',
-                    display: 'flex', flexDirection: 'column', gap: '10px',
-                    borderTop: '1px solid rgba(0,0,0,0.06)',
-                  }}>
+                  <div className="px-4 pb-4 flex flex-col gap-2.5 border-t border-black/5 animate-fade-in">
                     {/* Your Answer */}
                     {gap.userAnswer && gap.userAnswer.trim() && (
-                      <div style={{
-                        background: 'white', borderRadius: '8px', padding: '12px',
-                        border: '1px solid #E2E8F0', marginTop: '10px'
-                      }}>
-                        <div style={{
-                          fontSize: '10px', fontWeight: 700, textTransform: 'uppercase' as const,
-                          letterSpacing: '0.5px', color: '#94A3B8', marginBottom: '6px'
-                        }}>
+                      <div className="bg-white rounded-lg p-3 border border-slate-200 mt-2.5">
+                        <div className="text-[10px] font-bold uppercase tracking-wide text-slate-400 mb-1.5">
                           💬 {isHindi ? 'आपका जवाब' : 'Your Answer'}
                         </div>
-                        <div style={{ fontSize: '13px', color: '#475569', lineHeight: 1.5 }}>
+                        <div className="text-[13px] text-slate-600 leading-relaxed">
                           {gap.userAnswer}
                         </div>
                       </div>
                     )}
 
                     {/* What Actually Happens */}
-                    <div style={{
-                      background: 'white', borderRadius: '8px', padding: '12px',
-                      border: `1px solid ${config.borderColor}30`,
-                      ...(!gap.userAnswer?.trim() ? { marginTop: '10px' } : {})
-                    }}>
-                      <div style={{
-                        fontSize: '10px', fontWeight: 700, textTransform: 'uppercase' as const,
-                        letterSpacing: '0.5px', color: config.textColor, marginBottom: '6px'
-                      }}>
+                    <div className={`bg-white rounded-lg p-3 border ${config.detailBorder} ${!gap.userAnswer?.trim() ? 'mt-2.5' : ''
+                      }`}>
+                      <div className={`text-[10px] font-bold uppercase tracking-wide ${config.text} mb-1.5`}>
                         👁️ {isHindi ? 'असल में क्या होता है' : 'What Actually Happens'}
                       </div>
-                      <div style={{ fontSize: '13px', color: '#1E293B', lineHeight: 1.5, fontWeight: 500 }}>
+                      <div className="text-[13px] text-slate-800 leading-relaxed font-medium">
                         {gap.actualBehavior}
                       </div>
                     </div>
 
                     {/* Explanation */}
                     {gap.explanation && (
-                      <div style={{
-                        background: 'white', borderRadius: '8px', padding: '12px',
-                        border: '1px solid #E2E8F0'
-                      }}>
-                        <div style={{
-                          fontSize: '10px', fontWeight: 700, textTransform: 'uppercase' as const,
-                          letterSpacing: '0.5px', color: '#6366F1', marginBottom: '6px'
-                        }}>
+                      <div className="bg-white rounded-lg p-3 border border-slate-200">
+                        <div className="text-[10px] font-bold uppercase tracking-wide text-indigo-500 mb-1.5">
                           💡 {isHindi ? 'विस्तृत समझ' : 'Detailed Explanation'}
                         </div>
-                        <div style={{ fontSize: '13px', color: '#334155', lineHeight: 1.6 }}>
+                        <div className="text-[13px] text-slate-700 leading-relaxed">
                           {gap.explanation}
                         </div>
                       </div>
@@ -255,12 +188,7 @@ export default function ResultsPanel({
 
                     {/* Code Snippet */}
                     {gap.codeSnippet && (
-                      <div style={{
-                        background: '#1E293B', borderRadius: '8px', padding: '12px',
-                        fontFamily: "'Courier New', monospace", fontSize: '12px',
-                        color: '#E2E8F0', lineHeight: 1.7, overflowX: 'auto' as const,
-                        whiteSpace: 'pre-wrap' as const,
-                      }}>
+                      <div className="bg-slate-800 rounded-lg p-3 font-mono text-xs text-slate-200 leading-relaxed overflow-x-auto whitespace-pre-wrap">
                         {gap.codeSnippet}
                       </div>
                     )}
@@ -274,29 +202,17 @@ export default function ResultsPanel({
 
       {/* What You Got Right */}
       {analysis.correctUnderstandings && analysis.correctUnderstandings.length > 0 && (
-        <div style={{
-          background: '#F0FDF4',
-          borderRadius: '12px',
-          padding: '16px',
-          borderLeft: '4px solid #22C55E',
-        }}>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px'
-          }}>
-            <span style={{ fontSize: '16px' }}>✅</span>
-            <span style={{
-              fontSize: '14px', fontWeight: 700, color: '#15803D'
-            }}>
+        <div className="bg-green-50 rounded-xl p-4 border-l-4 border-l-green-500">
+          <div className="flex items-center gap-1.5 mb-2.5">
+            <span className="text-base">✅</span>
+            <span className="text-sm font-bold text-green-800">
               {isHindi ? 'आपने क्या सही समझा' : 'What You Got Right'}
             </span>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <div className="flex flex-col gap-1.5">
             {analysis.correctUnderstandings.map((item, idx) => (
-              <div key={idx} style={{
-                display: 'flex', alignItems: 'flex-start', gap: '8px',
-                fontSize: '13px', color: '#166534', lineHeight: 1.5
-              }}>
-                <span style={{ color: '#22C55E', fontWeight: 700, flexShrink: 0 }}>✓</span>
+              <div key={idx} className="flex items-start gap-2 text-[13px] text-green-800 leading-relaxed">
+                <span className="text-green-500 font-bold flex-shrink-0">✓</span>
                 <span>{item}</span>
               </div>
             ))}
@@ -306,26 +222,14 @@ export default function ResultsPanel({
 
       {/* Checklist */}
       {analysis.checklist && analysis.checklist.length > 0 && (
-        <div style={{
-          background: '#F8FAFC', borderRadius: '12px', padding: '16px',
-          border: '1px solid #E2E8F0'
-        }}>
-          <div style={{
-            fontSize: '12px', fontWeight: 700, color: '#334155', marginBottom: '10px'
-          }}>
+        <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+          <div className="text-xs font-bold text-slate-700 mb-2.5">
             📋 {isHindi ? 'सुधार Checklist' : 'Improvement Checklist'}
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <div className="flex flex-col gap-1.5">
             {analysis.checklist.map((item, idx) => (
-              <div key={idx} style={{
-                display: 'flex', alignItems: 'center', gap: '8px',
-                fontSize: '12px', color: '#475569'
-              }}>
-                <span style={{
-                  width: '16px', height: '16px', borderRadius: '4px',
-                  border: '1.5px solid #CBD5E1', display: 'flex',
-                  alignItems: 'center', justifyContent: 'center', flexShrink: 0
-                }} />
+              <div key={idx} className="flex items-center gap-2 text-xs text-slate-600">
+                <span className="w-4 h-4 rounded border-[1.5px] border-slate-300 flex items-center justify-center flex-shrink-0" />
                 <span>{item}</span>
               </div>
             ))}
@@ -336,16 +240,12 @@ export default function ResultsPanel({
       {/* Empty State */}
       {(!analysis.gaps || analysis.gaps.length === 0) &&
         (!analysis.correctUnderstandings || analysis.correctUnderstandings.length === 0) && (
-          <div style={{
-            background: 'linear-gradient(135deg, #EEF2FF, #F5F3FF)',
-            borderRadius: '12px', padding: '24px', textAlign: 'center',
-            border: '1px solid #C7D2FE'
-          }}>
-            <div style={{ fontSize: '32px', marginBottom: '8px' }}>🎉</div>
-            <div style={{ fontSize: '16px', fontWeight: 700, color: '#4338CA', marginBottom: '4px' }}>
+          <div className="bg-gradient-to-br from-indigo-50 to-violet-50 rounded-xl p-6 text-center border border-indigo-200">
+            <div className="text-[32px] mb-2">🎉</div>
+            <div className="text-base font-bold text-indigo-800 mb-1">
               {isHindi ? 'विश्लेषण पूरा हुआ' : 'Analysis Complete'}
             </div>
-            <div style={{ fontSize: '13px', color: '#6366F1' }}>
+            <div className="text-[13px] text-indigo-500">
               {isHindi
                 ? 'कोई significant gap नहीं पाया गया — बहुत बढ़िया!'
                 : 'No significant gaps found — great job!'}
@@ -354,20 +254,11 @@ export default function ResultsPanel({
         )}
 
       {/* Action Buttons */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '8px' }}>
+      <div className="flex flex-col gap-2.5 pt-2">
         {onReset && (
           <button
             onClick={onReset}
-            style={{
-              width: '100%', padding: '14px', borderRadius: '12px', border: 'none',
-              background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)',
-              color: 'white', fontSize: '15px', fontWeight: 700, cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-              boxShadow: '0 4px 12px rgba(99,102,241,0.3)',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseOver={(e) => { (e.target as HTMLElement).style.transform = 'scale(1.02)'; }}
-            onMouseOut={(e) => { (e.target as HTMLElement).style.transform = 'scale(1)'; }}
+            className="w-full py-3.5 rounded-xl border-none bg-gradient-to-r from-indigo-500 to-violet-500 text-white text-[15px] font-bold cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
           >
             {isHindi ? 'नया Code Try करें' : 'Try Another Code'} →
           </button>

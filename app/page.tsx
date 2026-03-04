@@ -72,10 +72,9 @@ export default function Home() {
               {/* Primary CTA */}
               <Link
                 href="/workspace"
-                className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-violet-500 text-white text-sm font-semibold rounded-xl shadow-md shadow-indigo-500/20 hover:shadow-lg hover:shadow-indigo-500/30 hover:scale-[1.03] active:scale-[0.98] transition-all duration-200"
+                className="hidden sm:inline-flex items-center gap-1.5 px-5 py-2.5 bg-gradient-to-r from-indigo-500 to-violet-500 text-white text-sm font-semibold rounded-xl shadow-md shadow-indigo-500/20 hover:shadow-lg hover:shadow-indigo-500/30 hover:scale-[1.03] active:scale-[0.98] transition-all duration-200"
               >
-                <span className="hidden sm:inline">Try Free</span>
-                <span className="sm:hidden">Try</span>
+                Try Free
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
@@ -100,7 +99,7 @@ export default function Home() {
 
             {/* Mobile Menu — Dropdown */}
             {mobileMenuOpen && (
-              <div className="absolute top-full left-0 right-0 mt-2 mx-0 bg-white/90 backdrop-blur-2xl rounded-2xl border border-slate-200/80 shadow-xl shadow-slate-200/40 p-4 lg:hidden animate-fade-in z-50">
+              <div className="absolute top-full left-0 right-0 mt-2 mx-0 bg-white backdrop-blur-2xl rounded-2xl border border-slate-200/80 shadow-xl shadow-slate-200/40 p-4 lg:hidden animate-fade-in z-50">
                 <div className="flex flex-col gap-1">
                   <Link 
                     href="/" 
@@ -155,37 +154,54 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="py-16 md:py-24 text-center px-4" aria-labelledby="hero-heading">
+      <section className="py-20 md:py-28 text-center px-4" aria-labelledby="hero-heading">
         <div className="container mx-auto max-w-4xl">
-          <h1 id="hero-heading" className="text-4xl md:text-6xl font-bold mb-6 text-gray-900 leading-tight">
+          <div className="animate-fade-in-up">
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-indigo-50 text-indigo-600 rounded-full text-xs font-semibold tracking-wide mb-6 border border-indigo-100">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+              </svg>
+              AI-Powered Code Reasoning
+            </span>
+          </div>
+          <h1 id="hero-heading" className="text-4xl md:text-6xl font-bold mb-6 text-gray-900 leading-tight animate-fade-in-up" style={{ animationDelay: '80ms' }}>
             Stop Guessing.
             <br />
-            <span className="text-indigo-600 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
               Start Understanding.
             </span>
           </h1>
-          <p className="text-lg md:text-2xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Diagnose your code reasoning gaps before debugging
+          <p className="text-lg md:text-xl text-slate-500 mb-10 max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: '160ms' }}>
+            Diagnose your code reasoning gaps before debugging.
+            <br className="hidden md:block" />
+            Build systematic thinking skills — in under 5 minutes.
           </p>
-          <Link
-            href="/workspace"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-indigo-600 text-white text-lg font-semibold rounded-xl hover:bg-indigo-700 transition-all shadow-lg hover:shadow-xl hover:scale-105 transform focus:outline-none focus:ring-4 focus:ring-indigo-300"
-            aria-label="Navigate to workspace to paste code and check reasoning"
-          >
-            Diagnose My Code →
-          </Link>
+          <div className="animate-fade-in-up" style={{ animationDelay: '240ms' }}>
+            <Link
+              href="/workspace"
+              className="inline-flex items-center gap-2.5 px-8 py-4 bg-gradient-to-r from-indigo-500 to-violet-500 text-white text-lg font-semibold rounded-xl shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/35 hover:scale-[1.03] active:scale-[0.98] transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-indigo-300 animate-pulse-glow"
+              aria-label="Navigate to workspace to paste code and check reasoning"
+            >
+              Diagnose My Code
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* Value Proposition Cards */}
-      <section id="features" className="py-16 px-4" aria-labelledby="value-props-heading">
+      <section id="features" className="py-16 md:py-20 px-4" aria-labelledby="value-props-heading">
         <div className="container mx-auto max-w-6xl">
           <h2 id="value-props-heading" className="sr-only">How LogicLens Helps You</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 stagger-children">
             {/* Card 1 */}
-            <article className="bg-white p-8 rounded-2xl border-2 border-gray-100 hover:border-indigo-200 hover:-translate-y-1 hover:scale-[1.02] transition-all hover:shadow-lg focus-within:border-indigo-300 focus-within:shadow-lg cursor-pointer">
-              <div className="w-14 h-14 bg-indigo-100 rounded-xl flex items-center justify-center mb-5" aria-hidden="true">
-                <span className="text-3xl">🩺</span>
+            <article className="bg-white p-8 rounded-2xl border-2 border-gray-100 hover:border-indigo-200 hover:-translate-y-1 transition-all duration-300 hover:shadow-lg focus-within:border-indigo-300 focus-within:shadow-lg">
+              <div className="w-14 h-14 bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl flex items-center justify-center mb-5" aria-hidden="true">
+                <svg className="w-7 h-7 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" />
+                </svg>
               </div>
               <h3 className="text-xl font-semibold mb-3 text-gray-900">Diagnose First</h3>
               <p className="text-gray-600 leading-relaxed">
@@ -194,9 +210,11 @@ export default function Home() {
             </article>
 
             {/* Card 2 */}
-            <article className="bg-white p-8 rounded-2xl border-2 border-gray-100 hover:border-indigo-200 hover:-translate-y-1 hover:scale-[1.02] transition-all hover:shadow-lg focus-within:border-indigo-300 focus-within:shadow-lg cursor-pointer">
-              <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-5" aria-hidden="true">
-                <span className="text-3xl">🧩</span>
+            <article className="bg-white p-8 rounded-2xl border-2 border-gray-100 hover:border-violet-200 hover:-translate-y-1 transition-all duration-300 hover:shadow-lg focus-within:border-violet-300 focus-within:shadow-lg">
+              <div className="w-14 h-14 bg-gradient-to-br from-violet-50 to-purple-100 rounded-xl flex items-center justify-center mb-5" aria-hidden="true">
+                <svg className="w-7 h-7 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
+                </svg>
               </div>
               <h3 className="text-xl font-semibold mb-3 text-gray-900">Find Logic Gaps</h3>
               <p className="text-gray-600 leading-relaxed">
@@ -205,9 +223,11 @@ export default function Home() {
             </article>
 
             {/* Card 3 */}
-            <article className="bg-white p-8 rounded-2xl border-2 border-gray-100 hover:border-indigo-200 hover:-translate-y-1 hover:scale-[1.02] transition-all hover:shadow-lg focus-within:border-indigo-300 focus-within:shadow-lg cursor-pointer">
-              <div className="w-14 h-14 bg-cyan-100 rounded-xl flex items-center justify-center mb-5" aria-hidden="true">
-                <span className="text-3xl">🛡️</span>
+            <article className="bg-white p-8 rounded-2xl border-2 border-gray-100 hover:border-cyan-200 hover:-translate-y-1 transition-all duration-300 hover:shadow-lg focus-within:border-cyan-300 focus-within:shadow-lg">
+              <div className="w-14 h-14 bg-gradient-to-br from-cyan-50 to-cyan-100 rounded-xl flex items-center justify-center mb-5" aria-hidden="true">
+                <svg className="w-7 h-7 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                </svg>
               </div>
               <h3 className="text-xl font-semibold mb-3 text-gray-900">Build Confidence</h3>
               <p className="text-gray-600 leading-relaxed">
@@ -219,7 +239,7 @@ export default function Home() {
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-20 md:py-28 px-4 relative overflow-hidden" aria-labelledby="how-it-works-heading">
+      <section id="how-it-works" className="py-16 md:py-24 px-4 relative overflow-hidden" aria-labelledby="how-it-works-heading">
         {/* Subtle background accent */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-indigo-100/30 rounded-full blur-3xl pointer-events-none" />
         
@@ -318,7 +338,7 @@ export default function Home() {
       </section>
 
       {/* Built for Developers */}
-      <section id="built-for-developers" className="py-20 md:py-28 px-4" aria-labelledby="developers-heading">
+      <section id="built-for-developers" className="py-16 md:py-24 px-4" aria-labelledby="developers-heading">
         <div className="container mx-auto max-w-6xl">
           <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 rounded-3xl p-8 md:p-14 relative overflow-hidden">
             
@@ -417,11 +437,69 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 px-4 bg-white border-t border-gray-200 mt-8">
-        <div className="container mx-auto max-w-6xl text-center">
-          <p className="text-gray-600 text-sm">
-            Built with ❤️ for developers | AI for Bharat Hackathon
-          </p>
+      <footer className="bg-slate-900 text-white pt-12 pb-8 px-4">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10">
+            {/* Brand Column */}
+            <div>
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M8 3c-2 0-3 1-3 3v4c0 2-1 3-3 3 2 0 3 1 3 3v4c0 2 1 3 3 3"/>
+                    <path d="M16 3c2 0 3 1 3 3v4c0 2 1 3 3 3-2 0-3 1-3 3v4c0 2-1 3-3 3"/>
+                    <circle cx="12" cy="13" r="1" fill="white" stroke="none"/>
+                  </svg>
+                </div>
+                <span className="text-lg font-bold tracking-tight">
+                  Logic<span className="text-indigo-400">Lens</span>
+                </span>
+              </div>
+              <p className="text-slate-400 text-sm leading-relaxed max-w-xs">
+                AI-powered code reasoning diagnosis.
+                Build systematic debugging skills in under 5 minutes.
+              </p>
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h4 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">Quick Links</h4>
+              <ul className="space-y-2.5">
+                <li><Link href="/workspace" className="text-slate-400 hover:text-white text-sm transition-colors">Try Workspace</Link></li>
+                <li><a href="#how-it-works" className="text-slate-400 hover:text-white text-sm transition-colors">How It Works</a></li>
+                <li><a href="#built-for-developers" className="text-slate-400 hover:text-white text-sm transition-colors">For Developers</a></li>
+              </ul>
+            </div>
+
+            {/* Connect */}
+            <div>
+              <h4 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4">Connect</h4>
+              <ul className="space-y-2.5">
+                <li>
+                  <a
+                    href="https://github.com/SinghCharanjeet11/logic-lens"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-slate-400 hover:text-white text-sm transition-colors flex items-center gap-2"
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    GitHub
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Bottom bar */}
+          <div className="border-t border-slate-800 pt-6 flex flex-col md:flex-row justify-between items-center gap-3">
+            <p className="text-slate-500 text-xs">
+              © {new Date().getFullYear()} LogicLens. Built with ❤️ for developers.
+            </p>
+            <p className="text-slate-600 text-xs">
+              AI for Bharat Hackathon · Powered by AWS Bedrock
+            </p>
+          </div>
         </div>
       </footer>
     </main>

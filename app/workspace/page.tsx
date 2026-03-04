@@ -239,7 +239,7 @@ export default function WorkspacePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex justify-between items-center gap-4">
               {/* Left side: Home button + Logo */}
-              <div className="flex items-center gap-6">
+              <div className="flex items-center gap-3">
                 {/* Back to Home Button */}
                 <Link
                   href="/"
@@ -249,7 +249,7 @@ export default function WorkspacePage() {
                   <svg className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                   </svg>
-                  <span>Home</span>
+                  <span className="hidden sm:inline">Home</span>
                 </Link>
 
                 {/* Logo */}
@@ -277,7 +277,6 @@ export default function WorkspacePage() {
                 </div>
               </div>
 
-              {/* Step Indicator */}
               <div className="hidden md:flex items-center gap-2">
                 {[
                   { label: 'Paste Code', step: 'input' as WorkflowStep },
@@ -300,11 +299,27 @@ export default function WorkspacePage() {
                       {s.label}
                     </div>
                     {i < arr.length - 1 && (
-                      <div className={`w-6 h-0.5 rounded ${(['input', 'questions', 'results'] as WorkflowStep[]).indexOf(step) > i ? 'bg-emerald-300' : 'bg-slate-200'
+                      <div className={`w-8 h-0.5 rounded-full ${(['input', 'questions', 'results'] as WorkflowStep[]).indexOf(step) > i ? 'bg-emerald-300' : 'bg-slate-200'
                         }`} />
                     )}
                   </div>
                 ))}
+              </div>
+
+              {/* Mobile Step Indicator */}
+              <div className="md:hidden flex items-center gap-2">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 border border-indigo-100 rounded-full">
+                  <span className="text-xs font-bold text-indigo-600">
+                    {step === 'input' ? '1' : step === 'questions' ? '2' : '3'}/3
+                  </span>
+                  <span className="text-xs font-medium text-indigo-500">
+                    {step === 'input'
+                      ? (isHindi ? 'Code' : 'Code')
+                      : step === 'questions'
+                        ? (isHindi ? 'सवाल' : 'Answer')
+                        : (isHindi ? 'नतीजे' : 'Results')}
+                  </span>
+                </div>
               </div>
 
               <div className="flex items-center gap-3">
@@ -509,43 +524,45 @@ export default function WorkspacePage() {
                 <p className="text-xs text-slate-500 mb-5">
                   {isHindi ? 'आपकी choice तय करती है कि हम कैसे questions पूछेंगे' : 'Your choice decides the kind of questions we ask'}
                 </p>
-                <ContextSelector
-                  value={context}
-                  onChange={setContext}
-                  language={language}
-                />
+                <div className="flex-1 overflow-y-auto">
+                  <ContextSelector
+                    value={context}
+                    onChange={setContext}
+                    language={language}
+                  />
 
-                {/* Difficulty Level Selector */}
-                <div className="mt-5">
-                  <p className="text-sm font-semibold text-slate-700 mb-2">
-                    {isHindi ? 'कठिनाई स्तर' : 'Difficulty Level'}
-                  </p>
-                  <div className="flex bg-slate-100 rounded-lg p-1 border border-slate-200">
-                    {[
-                      { value: 'beginner' as const, label: isHindi ? '🌱 शुरुआती' : '🌱 Beginner', color: 'emerald' },
-                      { value: 'intermediate' as const, label: isHindi ? '⚡ मध्यम' : '⚡ Intermediate', color: 'indigo' },
-                      { value: 'advanced' as const, label: isHindi ? '🔥 उन्नत' : '🔥 Advanced', color: 'rose' },
-                    ].map((d) => (
-                      <button
-                        key={d.value}
-                        onClick={() => setDifficulty(d.value)}
-                        className={`flex-1 px-2 py-2 rounded-md text-xs font-semibold transition-all duration-200 ${difficulty === d.value
-                          ? 'bg-white text-slate-900 shadow-sm'
-                          : 'text-slate-500 hover:text-slate-700'
-                          }`}
-                      >
-                        {d.label}
-                      </button>
-                    ))}
+                  {/* Difficulty Level Selector */}
+                  <div className="mt-5">
+                    <p className="text-sm font-semibold text-slate-700 mb-2">
+                      {isHindi ? 'कठिनाई स्तर' : 'Difficulty Level'}
+                    </p>
+                    <div className="flex bg-slate-100 rounded-lg p-1 border border-slate-200">
+                      {[
+                        { value: 'beginner' as const, label: isHindi ? '🌱 शुरुआती' : '🌱 Beginner', color: 'emerald' },
+                        { value: 'intermediate' as const, label: isHindi ? '⚡ मध्यम' : '⚡ Intermediate', color: 'indigo' },
+                        { value: 'advanced' as const, label: isHindi ? '🔥 उन्नत' : '🔥 Advanced', color: 'rose' },
+                      ].map((d) => (
+                        <button
+                          key={d.value}
+                          onClick={() => setDifficulty(d.value)}
+                          className={`flex-1 px-2 py-2 rounded-md text-xs font-semibold transition-all duration-200 ${difficulty === d.value
+                            ? 'bg-white text-slate-900 shadow-sm'
+                            : 'text-slate-500 hover:text-slate-700'
+                            }`}
+                        >
+                          {d.label}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-[10px] text-slate-400 mt-1.5">
+                      {difficulty === 'beginner' && (isHindi ? 'Output और basic logic के सवाल' : 'Questions about output & basic logic')}
+                      {difficulty === 'intermediate' && (isHindi ? 'Edge cases और data flow के सवाल' : 'Questions about edge cases & data flow')}
+                      {difficulty === 'advanced' && (isHindi ? 'Complexity, design patterns और tradeoffs' : 'Complexity, design patterns & tradeoffs')}
+                    </p>
                   </div>
-                  <p className="text-[10px] text-slate-400 mt-1.5">
-                    {difficulty === 'beginner' && (isHindi ? 'Output और basic logic के सवाल' : 'Questions about output & basic logic')}
-                    {difficulty === 'intermediate' && (isHindi ? 'Edge cases और data flow के सवाल' : 'Questions about edge cases & data flow')}
-                    {difficulty === 'advanced' && (isHindi ? 'Complexity, design patterns और tradeoffs' : 'Complexity, design patterns & tradeoffs')}
-                  </p>
                 </div>
 
-                <div className="mt-auto pt-6">
+                <div className="pt-5 sticky bottom-0 bg-white">
                   <button
                     onClick={handleGenerateQuestions}
                     disabled={!code.trim() || !context || isLoading}
