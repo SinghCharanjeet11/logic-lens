@@ -157,7 +157,7 @@ LogicLens supports both English and Hindi:
 ## 💰 Cost Optimization
 
 - **~$0.006 per session** using Amazon Nova Lite 2 + response caching
-- Serve **~16,666 sessions on just $100** of AWS credits
+- Serve **~50,000 sessions on just $100** of AWS credits
 - Response caching eliminates redundant Bedrock calls for similar code patterns
 - Token limits to control Bedrock costs
 - Efficient DynamoDB queries with GSI
