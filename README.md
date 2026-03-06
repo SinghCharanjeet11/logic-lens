@@ -4,7 +4,7 @@
 
 🌐 **Live Demo**: [https://main.d3ll7vpnn6c9g6.amplifyapp.com](https://main.d3ll7vpnn6c9g6.amplifyapp.com)
 
-LogicLens is an AI-powered code debugging tutor that helps Indian students and junior developers by asking diagnostic questions BEFORE explaining code. Built for the AI for Bharat hackathon.
+LogicLens is an AI-powered code debugging tutor that helps Indian students and junior developers by asking diagnostic questions before explaining code. Built for the AI for Bharat hackathon.
 
 ## 🎯 Problem Statement
 
