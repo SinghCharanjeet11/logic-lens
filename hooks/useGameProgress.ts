@@ -183,7 +183,12 @@ export function useGameProgress() {
         newProgress.badges = earnedBadges;
         saveProgress(newProgress);
 
-        return newProgress;
+        // Collect only the badges earned in THIS session
+        const newlyEarned = earnedBadges.filter(
+            b => b.earned && !earnedIds.has(b.id)
+        );
+
+        return { progress: newProgress, newlyEarned };
     }, [progress, saveProgress]);
 
     // Get all badges (earned + unearned)
