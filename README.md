@@ -2,6 +2,8 @@
 
 **Stop Guessing. Start Understanding.**
 
+🌐 **Live Demo**: [https://main.d3ll7vpnn6c9g6.amplifyapp.com](https://main.d3ll7vpnn6c9g6.amplifyapp.com)
+
 LogicLens is an AI-powered code debugging tutor that helps Indian students and junior developers by asking diagnostic questions BEFORE explaining code. Built for the AI for Bharat hackathon.
 
 ## 🎯 Problem Statement
@@ -12,6 +14,11 @@ Early-stage developers (0-3 years experience) face a critical challenge: they of
 
 - **Diagnostic-First Approach**: Answer questions about your code before seeing explanations
 - **Logic Gap Detection**: Identify exactly where your mental model differs from actual behavior
+- **Difficulty Levels**: Choose from Easy, Medium, and Hard question difficulty
+- **Voice Input**: Answer questions using your microphone (Web Speech API)
+- **Gamification**: Earn streaks and badges as you improve your debugging skills
+- **Shareable Results**: Generate and share a visual results card of your session
+- **Copy Optimal Code**: One-click copy of the AI-suggested improved code
 - **Multilingual Support**: Available in Hindi and English for Indian developers
 - **Mobile-First Design**: Optimized for 360px screens and low-bandwidth connections
 - **AWS-Powered**: Built on AWS Amplify, Lambda, Bedrock, and DynamoDB
@@ -20,10 +27,11 @@ Early-stage developers (0-3 years experience) face a critical challenge: they of
 
 - **Frontend**: Next.js 14+ (App Router), React, TypeScript, Tailwind CSS
 - **Backend**: AWS Lambda (serverless functions)
-- **AI**: Amazon Bedrock (Claude 3.5 Sonnet v2)
+- **AI**: Amazon Bedrock (Amazon Nova Lite 2) — chosen for cost efficiency ($0.006/session with caching)
 - **Database**: Amazon DynamoDB
 - **Hosting**: AWS Amplify with CloudFront CDN
 - **Code Editor**: Monaco Editor
+- **Voice**: Web Speech API (browser-native, no extra cost)
 
 ## 📋 Prerequisites
 
@@ -54,7 +62,8 @@ Edit `.env.local` and add your AWS credentials:
 NEXT_PUBLIC_AWS_REGION=us-east-1
 NEXT_PUBLIC_AWS_ACCESS_KEY_ID=your_access_key
 AWS_SECRET_ACCESS_KEY=your_secret_key
-NEXT_PUBLIC_BEDROCK_MODEL_ID=anthropic.claude-3-5-sonnet-20241022-v2:0
+NEXT_PUBLIC_API_URL=your_api_gateway_url
+NEXT_PUBLIC_DEMO_MODE=false
 ```
 
 4. Run the development server:
@@ -62,7 +71,7 @@ NEXT_PUBLIC_BEDROCK_MODEL_ID=anthropic.claude-3-5-sonnet-20241022-v2:0
 npm run dev
 ```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser, or visit the live deployment at [https://main.d3ll7vpnn6c9g6.amplifyapp.com](https://main.d3ll7vpnn6c9g6.amplifyapp.com).
 
 ## 📁 Project Structure
 
@@ -71,15 +80,30 @@ logic-lens/
 ├── app/                    # Next.js App Router pages
 │   ├── layout.tsx         # Root layout with metadata
 │   ├── page.tsx           # Home page
+│   ├── workspace/         # Main workspace page
 │   └── globals.css        # Global styles and design tokens
 ├── components/            # React components
+│   ├── CodeEditor.tsx     # Monaco-based code editor
+│   ├── QuestionPanel.tsx  # Diagnostic question UI
+│   ├── ResultsPanel.tsx   # Gap analysis results with copy optimal code
+│   ├── ContextSelector.tsx# Language and difficulty selector
+│   ├── VoiceInput.tsx     # Voice answer input component
+│   ├── BadgesDisplay.tsx  # Gamification badges UI
+│   └── ShareResultsCard.tsx # Shareable session results card
+├── hooks/
+│   └── useGameProgress.ts # Streaks, badges, and gamification logic
+├── lambda/                # AWS Lambda functions
+│   ├── question-generation/ # Generates diagnostic questions via Bedrock
+│   ├── gap-detection/     # Analyzes answers and detects logic gaps
+│   └── refactor-code/     # Suggests optimized code via Bedrock
+├── services/
+│   └── aws-config.ts     # AWS service config and API helpers
 ├── lib/                   # Utility functions and helpers
 │   ├── types.ts          # TypeScript type definitions
 │   ├── constants.ts      # Application constants
 │   └── utils.ts          # Utility functions
-├── services/             # AWS service integrations
-├── styles/               # Additional CSS modules
-├── public/               # Static assets
+├── public/               # Static assets (logo, icons)
+├── infrastructure/       # AWS CDK / IaC definitions
 ├── tailwind.config.ts    # Tailwind CSS configuration
 ├── next.config.js        # Next.js configuration
 ├── amplify.yml           # AWS Amplify build configuration
@@ -93,8 +117,8 @@ logic-lens/
 - **Secondary (Cyan)**: `#22D3EE` - Links, highlights, success states
 - **Warning (Amber)**: `#F59E0B` - Reasoning gaps, warnings
 - **Success (Emerald)**: `#10B981` - Correct reasoning, success states
-- **Background**: `#F9FAFB` - Main background
-- **Text**: `#111827` - Primary text
+- **Background**: `#0F172A` - Dark mode main background
+- **Text**: `#F1F5F9` - Primary text
 
 ### Typography
 - **Headings**: Inter (Semi-Bold 600)
@@ -132,39 +156,35 @@ LogicLens supports both English and Hindi:
 
 ## 💰 Cost Optimization
 
-- Target: <$0.50 per session
-- Budget: $100 AWS credits
-- Response caching for similar code patterns
+- **~$0.006 per session** using Amazon Nova Lite 2 + response caching
+- Serve **~16,666 sessions on just $100** of AWS credits
+- Response caching eliminates redundant Bedrock calls for similar code patterns
 - Token limits to control Bedrock costs
 - Efficient DynamoDB queries with GSI
+- Voice input via browser-native Web Speech API (zero extra cost)
 
 ## 🚀 Deployment
 
 ### AWS Amplify Deployment
 
-1. Install Amplify CLI:
+1. Connect your GitHub repository to AWS Amplify Console
+2. Set environment variables in Amplify Console settings
+3. Amplify auto-deploys on every push to `main`
+
+### Lambda Functions
+
+Deploy Lambda functions individually or via the infrastructure scripts:
 ```bash
-npm install -g @aws-amplify/cli
+cd lambda/question-generation && npm install
+cd lambda/gap-detection && npm install
+cd lambda/refactor-code && npm install
 ```
 
-2. Initialize Amplify:
-```bash
-amplify init
-```
+### Manual Build
 
-3. Deploy:
-```bash
-amplify publish
-```
-
-### Manual Deployment
-
-1. Build the project:
 ```bash
 npm run build
 ```
-
-2. Deploy to AWS Amplify Console or your preferred hosting platform.
 
 ## 📊 Performance Targets
 

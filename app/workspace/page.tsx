@@ -7,6 +7,7 @@ import ContextSelector, { ContextType } from '@/components/ContextSelector';
 import QuestionPanel from '@/components/QuestionPanel';
 import ResultsPanel from '@/components/ResultsPanel';
 import ShareResultsCard from '@/components/ShareResultsCard';
+import BadgeCelebration from '@/components/BadgeCelebration';
 import { Question, Answer, Analysis } from '@/lib/types';
 import { apiRequest } from '@/services/aws-config';
 import { detectLanguage } from '@/lib/languageDetector';
@@ -40,6 +41,8 @@ export default function WorkspacePage() {
   const [difficulty, setDifficulty] = useState<'beginner' | 'intermediate' | 'advanced'>('intermediate');
   const [showShareCard, setShowShareCard] = useState(false);
   const [showAchievements, setShowAchievements] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [newlyEarnedBadges, setNewlyEarnedBadges] = useState<import('@/hooks/useGameProgress').Badge[]>([]);
   const { recordSession, allBadges, streakDays, totalSessions } = useGameProgress();
 
   const isHindi = language === 'hi';
@@ -198,7 +201,13 @@ export default function WorkspacePage() {
       // Record session for gamification
       const correctCount = normalizedAnalysis.correctUnderstandings?.length || 0;
       const totalQ = questions.length || 5;
-      recordSession(correctCount, totalQ);
+      const { newlyEarned } = recordSession(correctCount, totalQ);
+
+      // Show badge celebration if new badges were earned
+      if (newlyEarned.length > 0) {
+        setNewlyEarnedBadges(newlyEarned);
+        setShowCelebration(true);
+      }
     } catch (err: any) {
       console.error('Analysis error:', err);
       // Even on error, show fallback results instead of leaving the user stuck
@@ -728,6 +737,18 @@ export default function WorkspacePage() {
           })()}
         </main>
       </div>
+
+      {/* Badge Celebration Overlay */}
+      {showCelebration && newlyEarnedBadges.length > 0 && (
+        <BadgeCelebration
+          badges={newlyEarnedBadges}
+          language={language}
+          onContinue={() => {
+            setShowCelebration(false);
+            setNewlyEarnedBadges([]);
+          }}
+        />
+      )}
 
       {/* Share Results Modal */}
       {showShareCard && analysis && (
