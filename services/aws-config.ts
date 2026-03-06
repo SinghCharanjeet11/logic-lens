@@ -56,13 +56,13 @@ const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
 
 function generateMockQuestions(code: string, context: string, language: string): any {
   const isHindi = language === 'hi';
-  
+
   return {
     sessionId: `demo_${Date.now()}`,
     questions: [
       {
         id: 1,
-        question: isHindi 
+        question: isHindi
           ? 'अगर input null या undefined हो तो क्या होगा?'
           : 'What happens if the input is null or undefined?',
         focus: 'edge_case'
@@ -88,7 +88,7 @@ function generateMockQuestions(code: string, context: string, language: string):
 
 function generateMockAnalysis(answers: any[], language: string): any {
   const isHindi = language === 'hi';
-  
+
   return {
     analysis: {
       sessionId: `demo_${Date.now()}`,
@@ -155,15 +155,15 @@ export async function apiRequest(
   // Demo mode - return mock data
   if (DEMO_MODE) {
     await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
-    
+
     if (endpoint === '/generate-questions') {
       return generateMockQuestions(body.code, body.context, body.language);
     }
-    
+
     if (endpoint === '/analyze-answers') {
       return generateMockAnalysis(body.answers, body.language || 'en');
     }
-    
+
     throw new Error('Unknown endpoint in demo mode');
   }
 
@@ -172,7 +172,7 @@ export async function apiRequest(
   const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
+    const apiUrl = process.env.NEXT_PUBLIC_API_GATEWAY_URL || '';
     if (!apiUrl) {
       throw new Error('API URL not configured');
     }
