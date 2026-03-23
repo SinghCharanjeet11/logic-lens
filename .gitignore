@@ -36,3 +36,34 @@ next-env.d.ts
 # AWS Amplify
 amplify/
 .amplifyrc
+
+# --- Additional entries from user rules ---
+# Environment / secret files
+/env
+.env.*
+
+# API keys, private configs
+*.key
+serviceAccountKey.json
+firebase-admin.json
+
+# Dependencies
+.dart_tool/
+.packages
+venv/
+.venv/
+__pycache__/
+
+# Build / generated files
+dist/
+
+# IDE / editor settings
+.vscode/
+.idea/
+*.iml
+
+# OS-generated files
+Thumbs.db
+
+# Logs & temp files
+*.log
