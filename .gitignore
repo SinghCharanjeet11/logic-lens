@@ -23,36 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 
 # Local env files
-.env*.local
-.env
-
-# Vercel
-.vercel
-
-# TypeScript
-*.tsbuildinfo
-next-env.d.ts
-
-# AWS Amplify
-amplify/
-.amplifyrc
-
-# --- Additional entries from user rules ---
-# Environment / secret files
-/env
-.env.*
-
-# API keys, private configs
-*.key
-serviceAccountKey.json
-firebase-admin.json
-
-# Dependencies
-.dart_tool/
-.packages
-venv/
-.venv/
-__pycache__/
 
 # Build / generated files
 dist/
