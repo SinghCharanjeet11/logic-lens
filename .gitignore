@@ -2,6 +2,11 @@
 **/node_modules
 /.pnp
 .pnp.js
+.dart_tool/
+.packages
+venv/
+.venv/
+__pycache__/
 
 # Testing
 /coverage
@@ -23,6 +28,29 @@ yarn-debug.log*
 yarn-error.log*
 
 # Local env files
+.env*.local
+.env
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# AWS Amplify
+amplify/
+.amplifyrc
+
+# Environment / secret files
+/env
+.env.*
+!.env.local.example
+
+# API keys, private configs
+*.key
+serviceAccountKey.json
+firebase-admin.json
 
 # Build / generated files
 dist/
